@@ -1,0 +1,1166 @@
+web/app/runs.js:1 str | rentProject()?.id||'';if(!workflowId)return toast( || '暂无可运行 SOP'
+web/app/runs.js:1 str | 可运行 SOP');button.disabled=true;button.textContent= || '正在启动…'
+web/app/runs.js:1 str | showRunDetail(run.id);toast(run.status==='queued'? || '已进入项目排队，获得名额后自动启动'
+web/app/runs.js:1 str | );toast(run.status==='queued'?'已进入项目排队，获得名额后自动启动': || '流水线已开始，实时事件流已连接'
+web/app/runs.js:1 str | }finally{button.disabled=false;button.textContent= || '开始运行'
+web/app/runs.js:158 tpl$ | ion runTimingTitle(r){const t=runTiming(r);return  || `执行 ${duration(t.execution)}：节点实际运行时间，含每次重试\n端到端 ${duration(t.wall)}：从创建到${['succeeded','failed','cancelled'].includes(r.status)?'结束':'现在'}\n等待 ${duration(t.waiting)}：失败待处理、暂停、人工确认、排队等`
+web/app/runs.js:159 tpl$ | e(r){const t=runTiming(r);return t.waiting>=60000? || ` · 端到端 ${duration(t.wall)}（等待 ${duration(t.waiting)}）`
+web/app/runs.js:160 str | ow()-new Date(value))/1000));if(seconds<60)return  || '刚刚'
+web/app/runs.js:160 tpl$ | ;if(seconds<60)return '刚刚';if(seconds<3600)return  || `${Math.floor(seconds/60)} 分钟前`
+web/app/runs.js:160 tpl$ | h.floor(seconds/60)} 分钟前`;if(seconds<86400)return  || `${Math.floor(seconds/3600)} 小时前`
+web/app/runs.js:160 tpl$ | 0)return `${Math.floor(seconds/3600)} 小时前`;return  || `${Math.floor(seconds/86400)} 天前`
+web/app/runs.js:169 str | tion taskTriggerInfo(task){ if(!task)return{label: || '直接运行'
+web/app/runs.js:169 str |  if(!task)return{label:'直接运行',kind:'manual',title: || '从流程设计器或 API 直接启动，未关联需求'
+web/app/runs.js:171 str | cheduleJobId),name=job?.name||task.scheduleJobId|| || '定时任务'
+web/app/runs.js:172 str | '; const action=task.triggerOrigin==='manual_run'? || '立即运行'
+web/app/runs.js:172 str | ='manual_run'?'立即运行':task.triggerOrigin==='timer'? || '定时触发'
+web/app/runs.js:172 str | l_run'?'立即运行':task.triggerOrigin==='timer'?'定时触发': || '定时任务'
+web/app/runs.js:175 str | '}; } if(task.dispatchMode==='rerun')return{label: || '手动重跑'
+web/app/runs.js:176 str | )return{label:'手动重跑',kind:'manual'}; return{label: || '手动触发'
+web/app/runs.js:178 tpl$ | dge(task){const info=taskTriggerInfo(task);return  || `<span class="run-trigger ${info.kind}" title="${escapeHTML(info.title||'触发来源')}">${escapeHTML(info.label)}</span>`
+web/app/runs.js:181 tpl$ | ?.totalTokens||0),0); $('#runOverview').innerHTML= || `<span class="run-kpi" title="成功率 = 已完成 ÷（已完成 + 失败）"><span>成功率</span><b>${rate}%</b><small>${successBase} 次已结束</small></span><span class="run-kpi"><span>累计 Token</span><b>${formatTokens(totalTokens)}</b><small>${runs.length} 次</small></span>`
+web/app/runs.js:184 str | r('[data-live-text]');if(text)text.textContent=on? || '实时更新中'
+web/app/runs.js:184 str | -live-text]');if(text)text.textContent=on?'实时更新中': || '暂无进行中的运行'
+web/app/runs.js:208 str | r?.status==='paused'); const [label,icon]=paused?[ || '已暂停'
+web/app/runs.js:208 str | ?(r.kind==='workspace'?(runWorkspaceReclaimed(r)?[ || '已回收'
+web/app/runs.js:208 str | pace'?(runWorkspaceReclaimed(r)?['已回收','folder']:[ || '工作区在线'
+web/app/runs.js:208 str | eReclaimed(r)?['已回收','folder']:['工作区在线','chat']):[ || '待指令'
+web/app/runs.js:208 str | der']:['工作区在线','chat']):['待指令','chat']):({queued:[ || '排队中'
+web/app/runs.js:208 str | ['待指令','chat']):({queued:['排队中','clock'],running:[ || '进行中'
+web/app/runs.js:208 str | ueued:['排队中','clock'],running:['进行中',''],waiting:[ || '待确认'
+web/app/runs.js:208 str | ['进行中',''],waiting:['待确认','user-hold'],succeeded:[ || '已完成'
+web/app/runs.js:208 str | 认','user-hold'],succeeded:['已完成','check'],failed:[ || '失败'
+web/app/runs.js:208 str | :['已完成','check'],failed:['失败','alert'],cancelled:[ || '已取消'
+web/app/runs.js:212 tpl$ | hip(task){const info=taskTriggerInfo(task);return  || `<span class="run-chip" title="${escapeHTML(info.title||'触发来源')}">${escapeHTML(info.label)}</span>`
+web/app/runs.js:215 str | ?.name||r.workflowId,title=ctx.issue?.title||sop|| || '自由协作'
+web/app/runs.js:222 tpl$ | tle(r))}">${runElapsed(r)}</span>`; const actions= || `<button type="button" class="run-row-action run-view-btn" data-view-run="${escapeHTML(r.id)}" aria-label="查看详情" title="查看详情">${runIconSlot('eye',15)}</button>${isDeletable?`
+web/app/runs.js:222 str |  data-delete-run="${escapeHTML(r.id)}" aria-label= || "删除记录"
+web/app/runs.js:222 str | run="${escapeHTML(r.id)}" aria-label="删除记录" title= || "删除记录"
+web/app/runs.js:223 tpl$ | ${runIconSlot('trash',15)}</button>`:''}`; return  || `<div class="run-card run-row ${state.selectedRun===r.id?'active':''}" data-id="${escapeHTML(r.id)}" role="listitem" tabindex="0">${runIconSlot(group?'chat':'workflow',15,'run-glyph')}<div class="run-row-main"><b class="run-row-title" title="${escapeHTML(title)}">${escapeHTML(title)}</b><div class="run-row-meta">${r.workflowSnapshot?.generic?'<span class="run-chip">通用</span>':''}${meta}</div></div
+web/app/runs.js:237 str | alogWorkflows();$('#runWorkflowFilter').innerHTML= || '<option value="">全部 SOP</option>'
+web/app/runs.js:243 tpl$ | '#runListCount')&&($('#runListCount').textContent= || `${runs.length} 条`
+web/app/runs.js:246 tpl$ | s.items.map(r=>runRowHTML(r,workflows)).join('')|| || `<div class="run-list-empty">${runIconSlot('search',17,'run-glyph')}<b>没有匹配的运行</b><p>换个关键词，或到需求列表查看对应需求的执行结果。</p></div>`
+web/app/runs.js:248 tpl$ | iv>`; const pager=$('#runPager'); pager.innerHTML= || `<span class="run-total">共 ${runs.length} 条</span>${pagerHTML('runs', pagedRuns)}`
+web/app/runs.js:317 str | ,'err')); } function runStatus(s){return ({queued: || '排队中'
+web/app/runs.js:317 str | nction runStatus(s){return ({queued:'排队中',running: || '运行中'
+web/app/runs.js:317 str | us(s){return ({queued:'排队中',running:'运行中',waiting: || '待确认'
+web/app/runs.js:317 str | ({queued:'排队中',running:'运行中',waiting:'待确认',paused: || '已暂停'
+web/app/runs.js:317 str | unning:'运行中',waiting:'待确认',paused:'已暂停',succeeded: || '已完成'
+web/app/runs.js:317 str | waiting:'待确认',paused:'已暂停',succeeded:'已完成',failed: || '失败'
+web/app/runs.js:317 str | aused:'已暂停',succeeded:'已完成',failed:'失败',cancelled: || '已取消'
+web/app/runs.js:319 str | lToast(run,message){return run?.status==='queued'? || '已进入项目排队，获得名额后自动启动'
+web/app/runs.js:319 tpl$ | 进入项目排队，获得名额后自动启动':run?.status==='running'?message: || `当前状态：${runDisplayStatus(run)}`
+web/app/runs.js:329 str | {return (r?.pauseRequested||r?.status==='paused')? || '已暂停'
+web/app/runs.js:329 str | r?.status==='paused')?'已暂停':r?.kind==='workspace'? || '对话工作区'
+web/app/runs.js:375 str | {const a=e.attributes||{},facts=[["ID",a.hookId],[ || "事件"
+web/app/runs.js:375 str | ributes||{},facts=[["ID",a.hookId],["事件",a.hook],[ || "仓库"
+web/app/runs.js:375 str | repositoryName||a.repositoryDir||a.repositoryId],[ || "阶段"
+web/app/runs.js:375 str | toryDir||a.repositoryId],["阶段",a.executionPhase],[ || "语言"
+web/app/runs.js:375 str | onPhase],["语言",a.language],["Matcher",a.matcher],[ || "耗时"
+web/app/runs.js:375 str | "耗时",a.durationMs!=null?`${a.durationMs} ms`:""],[ || "退出码"
+web/app/runs.js:417 str | ; } function telemetryLabel(e){return ({lifecycle: || '生命周期'
+web/app/runs.js:417 str |  telemetryLabel(e){return ({lifecycle:'生命周期',hook: || 'Hook 执行'
+web/app/runs.js:417 str | ){return ({lifecycle:'生命周期',hook:'Hook 执行',script: || '脚本'
+web/app/runs.js:417 str | lifecycle:'生命周期',hook:'Hook 执行',script:'脚本',model: || '模型'
+web/app/runs.js:417 str | ',hook:'Hook 执行',script:'脚本',model:'模型',reasoning: || '内部推理'
+web/app/runs.js:417 str | 行',script:'脚本',model:'模型',reasoning:'内部推理',output: || '输出'
+web/app/runs.js:417 str | '脚本',model:'模型',reasoning:'内部推理',output:'输出',tool: || '工具调用'
+web/app/runs.js:417 str | 型',reasoning:'内部推理',output:'输出',tool:'工具调用',usage: || 'Token 用量'
+web/app/runs.js:417 str | ,output:'输出',tool:'工具调用',usage:'Token 用量',process: || '进程'
+web/app/runs.js:417 str | '工具调用',usage:'Token 用量',process:'进程',verification: || '验证'
+web/app/runs.js:417 str | 'Token 用量',process:'进程',verification:'验证',sandbox: || '沙箱'
+web/app/runs.js:417 str | cess:'进程',verification:'验证',sandbox:'沙箱',artifact: || '产物'
+web/app/runs.js:426 str | tion telemetrySectionTitle(adapter){return ({live: || '节点实时轨迹'
+web/app/runs.js:426 str | ectionTitle(adapter){return ({live:'节点实时轨迹',hooks: || 'Hook 轨迹'
+web/app/runs.js:426 str | pter){return ({live:'节点实时轨迹',hooks:'Hook 轨迹',otel: || 'OTEL 轨迹'
+web/app/runs.js:426 str | 点实时轨迹',hooks:'Hook 轨迹',otel:'OTEL 轨迹'})[adapter]|| || '节点轨迹'
+web/app/runs.js:427 str | unction telemetryEmptyHint(adapter){return ({live: || '该节点没有实时轨迹'
+web/app/runs.js:427 str | mptyHint(adapter){return ({live:'该节点没有实时轨迹',hooks: || '还没有 Hook 事件。角色级 Hook 在 Claude Code、Codex 或 CodeBuddy 触发后会写到这里。'
+web/app/runs.js:427 str | k 在 Claude Code、Codex 或 CodeBuddy 触发后会写到这里。',otel: || '还没有 OTEL span。需要 CodeBuddy 打开原生 OTLP 导出。'
+web/app/runs.js:427 str | OTEL span。需要 CodeBuddy 打开原生 OTLP 导出。'})[adapter]|| || '该节点没有轨迹'
+web/app/runs.js:429 tpl$ | unction telemetrySourceTabs(adapter,attr){ return  || `<div class="trace-source-tabs">${[['live','实时'],['hooks','Hook'],['otel','OTEL']].map(([id,label])=>`
+web/app/runs.js:448 tpl$ | liveUsageHTML(r){ const usage=r.usage||{}; return  || `<span>资源消耗</span><b>${formatTokens(usage.totalTokens)} tokens · ${r.toolCalls||0} tools</b><small>${formatTokens(usage.inputTokens)} 输入 / ${formatTokens(usage.outputTokens)} 输出 · cache ${formatTokens(usage.cacheReadTokens)} 命中 / ${formatTokens(usage.cacheWriteTokens)} 写入 · $${Number(usage.costUsd||0).toFixed(4)}</small><small class="usage-source">实时 stream-json · Hook / OTEL 只进轨迹</small>`
+web/app/runs.js:453 tpl$ | oval'){ const findings=(gate.findings||[]).map(f=> || `<li><b>${escapeHTML(f.title||'待确认项')}</b>${f.evidence?`
+web/app/runs.js:454 tpl$ | TML(f.evidence)}</p>`:''}</li>`).join(''); return  || `<div class="node-decision human"><b>等待人工确认</b><div><strong>需要确认</strong><p>${escapeHTML(gate.actionRequired||'请结合节点产物和执行证据作出判断。')}</p></div><div><strong>Agent 判断依据</strong><p>${escapeHTML(gate.reason||'未提供')}</p></div>${gate.summary?`
+web/app/runs.js:457 tpl$ | iled'){ const findings=(gate.findings||[]).map(f=> || `<li><b>${escapeHTML(f.title||'失败项')}</b>${f.evidence?`
+web/app/runs.js:463 str | t reason=agentOwnsFailure?(gate.reason||nr.error|| || '未提供'
+web/app/runs.js:463 str | Failure?(gate.reason||nr.error||'未提供'):(nr.error|| || '未提供'
+web/app/runs.js:464 tpl$ | r||'未提供'); const terminalNote=agentOwnsFailure?'': || `<strong>Agent 终态</strong><p>${gate.decision==='pass'?'pass：Agent 认为任务已完成，但节点客观校验未通过':'Agent 提交了 '+escapeHTML(gate.decision||'未知终态')+'，节点随后失败'}</p>`
+web/app/runs.js:465 tpl$ | ML(gate.decision||'未知终态')+'，节点随后失败'}</p>`; return  || `<div class="node-error"><b>执行失败</b><div class="node-error-detail"><strong>失败原因</strong><p>${escapeHTML(reason)}</p>${credentialActionHTML(reason)}${terminalNote}${gate.summary?`
+web/app/runs.js:467 tpl$ | </div>`; } return nr?.error&&nr.status==='failed'? || `<div class="node-error"><b>执行失败</b><pre>${escapeHTML(nr.error)}</pre>${credentialActionHTML(nr.error)}</div>`
+web/app/runs.js:552 str | lout)return true; if(nr.status==='waiting_approval || '&&!hasCallout)return true;
+  return false;
+}
+function selectRunNode(nodeId){
+  if(!nodeId)return;
+  const same=state.selectedRunNode===nodeId;
+  state.selectedRunNode=nodeId;
+  if(!same){state.runLogs=null;state.runTelemetry=null}
+  const run=state.activeRun;if(!run)return;
+  state._scrollToDrill=true;
+  renderRunDetail(run);
+  if(!same){const pg=runPageTarget(run,nodeId);ensureRunPage
+web/app/runs.js:567 str | lRequested||run.nodes?.[nodeId]?.status!=='running || ')return false;
+  /** 已加载的子流程用于校正父节点仍为运行中的过渡状态。 */
+  const child=childRunState(run.nodes[nodeId].childRunId);
+  return (!child||(child.status==='
+web/app/runs.js:579 str | pct+'%';if(pct)pct.textContent=progress.pct+'% 已完成 || ';if(count)count.textContent=`${progress.done} / ${progress.total} 节点已结束`;
+  host.querySelectorAll('
+web/app/runs.js:584 str | small){const extra=(small.textContent.split(' · 上游 || ')[1]);small.textContent=`${gv.text}${extra?` · 上游 ${extra}`:'
+web/app/runs.js:587 str | ); if(count){if(!em){em=document.createElement('em || ');btn.appendChild(em)}em.textContent=`${count} 产物`}else if(em)em.remove();
+  });
+  const selected=state.selectedRunNode,nr=r.nodes?.[selected]||{};
+  /** 保留现有元素，让连续日志更新不重启动效。 */
+  const inspectorRunning=nodeInspectorIsRunning(r,selected);
+  const inspectorStatus=host.querySelector('
+web/app/runs.js:598 str | uerySelector('.run-context-grid > div:last-child b || ');
+  if(artifactTotal)artifactTotal.textContent=`${(r.artifacts||[]).length} 个不可变快照`;
+  const activity=host.querySelector('
+web/app/runs.js:610 str | worker-log-section'),'data-logs-more','加载更早的 100 条 || ',!!logPage?.hasMore,()=>loadRunLogs(pg.runId,pg.nodeId,true),logPage?`${visibleWorkerLogs(logPage.items).length} 条`:'
+web/app/runs.js:611 str | tor('.trace-section'),'data-tel-more','加载更早的 100 条 || ',!!telPage?.hasMore,()=>loadRunTelemetry(pg.runId,pg.nodeId,true),telPage?`${compactTelemetry(telPage.items).length} 条已加载`:'
+web/app/runs.js:645 str | ghost small" data-workspace-refresh>重试</button>':' || ';
+  return `<div class="workspace-unavailable"><span>◇</span><b>当前无法浏览工作区</b><p>${escapeHTML(reason||'
+web/app/runs.js:646 str | an><b>当前无法浏览工作区</b><p>${escapeHTML(reason||'工作区不可用 || ')}</p><small>运行日志和不可变交付物仍可继续查看。</small>${error}${retry}</div>`;
+}
+function runWorkspaceWasCleaned(run){
+  const raw=run?.workspaceCleanedAt;
+  if(!raw)return false;
+  const ts=Date.parse(raw);
+  if(!Number.isFinite(ts))return false;
+  return new Date(ts).getUTCFullYear()>=1971;
+}
+function workspaceIsAvailable(run,ws){
+  return !!(ws&&ws.runId===run?.id&&ws.cleaned===runWorkspaceWasClean
+web/app/runs.js:678 str | er"></span><b>正在读取工作区</b><p>确认工作区是否仍可浏览…</p></div> || ';
+  if(ws.error)return `<div class="workspace-unavailable"><span>!</span><b>工作区加载失败</b><p>${escapeHTML(ws.error)}</p><button class="button ghost small" data-workspace-refresh>重试</button></div>`;
+  if(!ws.info?.available||ws.restoreError)return workspaceUnavailableHTML(ws.info?.reason,ws.restoreError||ws.info?.restore?.error,workspaceCanRestore(run,ws));
+  const maximized=!!ws.maximized;
+  ret
+web/app/runs.js:688 str |  shouldPatchRunLive(run){ const host=$('#runDetail || ');
+  if(!host||host.dataset.runId!==run?.id)return false;
+  if(host.dataset.controlSignature!==runControlSignature(run))return false;
+  // 列表摘要没有节点。先画了空拓扑之后，完整运行到达时必须整页重画，不能只补状态。
+  const want=(run?.workflowSnapshot?.nodes||[]).length;
+  if(want>0&&host.querySelectorAll('
+web/app/runs.js:732 str | eout(timer); if(window.location.protocol!=='https: || '){
+        return rawUrl;
+      }
+    }
+    return httpsCandidate;
+  }catch(e){
+    return rawUrl;
+  }
+}
+function previewPaneHTML(run){
+  const pv=state.runPreview;
+  if(!runPreviewDeclared(run)&&!(pv&&pv.runId===run.id&&pv.info)){
+    return `<div class="workspace-unavailable"><span>◇</span><b>该 SOP 未开启前端预览</b><p>在流程编辑页左侧「流程步骤」面板添加「预览」节点并连线到需要构建的位置，运行时自动构建静态站点并归档。</p></div>`;
+  }
+ 
+web/app/runs.js:746 str | r"></span><b>正在读取前端预览</b><p>确认交付物是否已经归档…</p></div> || ';
+  if(pv.error)return `<div class="workspace-unavailable"><span>!</span><b>预览加载失败</b><p>${escapeHTML(pv.error)}</p><button class="button ghost small" data-preview-refresh>重试</button></div>`;
+  const info=pv.info||{};
+  if(info.status==='
+web/app/runs.js:749 str | (info.status==='pending'||info.status==='archiving || '){
+    return `<div class="workspace-loading"><span class="workspace-spinner"></span><b>正在生成前端预览</b><p>来源 ${escapeHTML(info.sourcePath||run.workflowSnapshot?.preview?.sourcePath||'
+web/app/runs.js:750 str | Path||run.workflowSnapshot?.preview?.sourcePath||' || ')}，打包完成后即可打开。</p><button class="button ghost small" data-preview-refresh>刷新</button></div>`;
+  }
+  if(info.status==='
+web/app/runs.js:752 str | esh>刷新</button></div>`; } if(info.status==='failed || '){
+    return `<div class="workspace-unavailable"><span>!</span><b>预览生成失败</b><p>${escapeHTML(info.error||'
+web/app/runs.js:753 str | n><b>预览生成失败</b><p>${escapeHTML(info.error||'归档未能完成 || ')}</p><small>业务交付结果不受影响，工作区仍会按成功 Run 策略清理。</small></div>`;
+  }
+  if(info.status==='
+web/app/runs.js:755 str |  策略清理。</small></div>`; } if(info.status==='skipped || '){
+    return `<div class="workspace-unavailable"><span>◇</span><b>已跳过前端预览</b><p>${escapeHTML(info.error||'
+web/app/runs.js:756 str | 端预览</b><p>${escapeHTML(info.error||'该仓库没有可构建的前端工程。 || ')}</p><small>业务交付结果不受影响，主流程已成功结束。</small></div>`;
+  }
+  if(info.status==='
+web/app/runs.js:758 str | if(info.status==='expired'||info.status==='deleted || '){
+    return `<div class="workspace-unavailable"><span>◇</span><b>预览已过期</b><p>该交付物已超过 TTL，静态包已被回收。</p></div>`;
+  }
+  if(info.status!=='
+web/app/runs.js:761 str | TTL，静态包已被回收。</p></div>`; } if(info.status!=='ready || '){
+    return `<div class="workspace-unavailable"><span>◇</span><b>预览尚未就绪</b><p>当前状态：${escapeHTML(info.status||'
+web/app/runs.js:769 str |  const frameUrl=window.location.protocol==='https: || '?previewCandidateHttpsURL(session.url):session.url;
+  return `<section class="run-preview-pane"><div class="run-preview-toolbar"><span>预览 · ${escapeHTML(info.entryFile||'
+web/app/runs.js:770 str | span>预览 · ${escapeHTML(info.entryFile||'index.html || ')} · ${info.fileCount||0} 个文件</span><div class="run-preview-backend"><small>当前后端</small>${backendLabel}<button type="button" class="button ghost small" data-preview-backend-edit>${backendAction}</button></div><div><button type="button" class="button ghost small" data-preview-download title="下载完整静态站点 ZIP 包">下载静态文件</button><button class="button ghost small" data-preview-refresh>刷新</button><button c
+web/app/runs.js:894 str | eholder:'https: defaultValue:current, confirmText: || '应用'
+web/app/runs.js:899 str | view?.session?.url && current===next){ toast(next? || '已是当前后端'
+web/app/runs.js:899 str | sion?.url && current===next){ toast(next?'已是当前后端': || '当前未设置后端'
+web/app/runs.js:922 str | nderPreviewPane(state.activeRun||run); toast(next? || '已应用到预览页'
+web/app/runs.js:922 str | wPane(state.activeRun||run); toast(next?'已应用到预览页': || '已清除预览后端'
+web/app/runs.js:924 str | '已清除预览后端','ok'); }catch(err){ toast(err?.message|| || '设置后端地址失败'
+web/app/runs.js:1035 tpl$ | Id]||{}; const view={cls:x.status||'pending',text: || `${statusText(x.status)||'待执行'} · attempt ${x.attempt||0}`
+web/app/runs.js:1039 tpl$ | atus!=='running')view.cls=focus.status; view.text= || `子 SOP ${statusText(focus.status)} · ${focus.node.name||focus.node.id}`
+web/app/runs.js:1062 str | ring(); const end=range.running||range.end===null? || '现在'
+web/app/runs.js:1105 tpl$ | nst child=childRunState(x.childRunId); const open= || `<button type="button" class="button ghost small" data-open-child-run="${escapeHTML(x.childRunId)}">打开子 SOP 运行</button>`
+web/app/runs.js:1106 tpl$ | ldRunId)}">打开子 SOP 运行</button>`; if(!child)return  || `<div class="child-sop-panel"><div class="child-sop-head"><b>子 SOP 运行</b>${open}</div><p class="muted">正在加载子 SOP 状态…</p></div>`
+web/app/runs.js:1107 tpl$ | ]).map(n=>{const c=child.nodes?.[n.id]||{};return  || `<div class="child-sop-row"><span>${escapeHTML(n.name||n.id)}</span><span class="status ${escapeHTML(c.status||'pending')}">${statusText(c.status)||'待执行'}</span>${c.status==='failed'&&c.error?`
+web/app/runs.js:1108 tpl$ | e(0,200))}</small>`:''}</div>`}).join(''); return  || `<div class="child-sop-panel"><div class="child-sop-head"><b>子 SOP：${escapeHTML(child.workflowSnapshot?.name||child.workflowId||'')}</b><span class="status ${runDisplayStatusClass(child)}">${runDisplayStatus(child)}</span>${open}</div>${rows}</div>`
+web/app/runs.js:1117 tpl$ | []).find(n=>n.id===nodeId)?.name||nodeId;out.push( || `<div class="child-sop-callout failed"><div><b>「${escapeHTML(parentName)}」里的子 SOP 失败了</b><p>在子 SOP 运行里重试或手动通过后，父流程会继续。</p></div><button type="button" class="button primary small" data-open-child-run="${escapeHTML(x.childRunId)}">查看子 SOP 运行</button></div>`
+web/app/runs.js:1124 tpl$ | ''; const title=focus.status==='waiting_approval'? || `「${parentName}」里的子 SOP 在等人工审批`
+web/app/runs.js:1124 tpl$ | waiting_approval'?`「${parentName}」里的子 SOP 在等人工审批`: || `「${parentName}」里的子 SOP 失败了`
+web/app/runs.js:1125 tpl$ | `; const detail=focus.status==='waiting_approval'? || `子 SOP「${childName}」的节点「${nodeName}」需要人工判断，审批在子 SOP 运行里处理，处理完父流程会自动继续。`
+web/app/runs.js:1125 tpl$ | 点「${nodeName}」需要人工判断，审批在子 SOP 运行里处理，处理完父流程会自动继续。`: || `子 SOP「${childName}」在节点「${nodeName}」失败${err?`
+web/app/runs.js:1125 tpl | 「${nodeName}」失败${err?`：${String(err).slice(0,200)} || `:''}。在子 SOP 运行里重试或手动通过后，父流程会继续。`
+web/app/runs.js:1126 tpl$ | ,200)}`:''}。在子 SOP 运行里重试或手动通过后，父流程会继续。`; out.push( || `<div class="child-sop-callout ${focus.status}"><div><b>${escapeHTML(title)}</b><p>${escapeHTML(detail)}</p></div><button type="button" class="button primary small" data-open-child-run="${escapeHTML(x.childRunId)}">${focus.status==='waiting_approval'?'去审批':'查看子 SOP 运行'}</button></div>`
+web/app/runs.js:1148 tpl$ | gress,graphNodes){ if(wf.groupCompletion){ return  || `<div class="run-progress-cell"><span>交付状态</span><b>用户已验收 · 交付闭环</b><small class="run-progress-pct">${progress.done} / ${progress.total} 节点已结束 · 执行进度不代表测试通过</small></div>`
+web/app/runs.js:1151 tpl$ | /small></div>`; } if(!runIsGroupMode(r)){ return  || `<div class="run-progress-cell"><span>执行进度</span><b>${progress.done} / ${progress.total} 节点已结束</b><div class="run-progress large"><i style="width:${progress.pct}%"></i></div><small class="run-progress-pct">${progress.pct}% 已完成</small></div>`
+web/app/runs.js:1154 tpl$ | .nodes||[]).filter(n=>n.requestId).length; return  || `<div class="run-progress-cell"><span>协作模式</span><b>历史协作记录</b><small class="run-progress-pct">SOP 主干已冷冻 · ${graphNodes.length} 步可展开 · 群内任务 ${live} 个</small></div>`
+web/app/runs.js:1156 str | odeChipHTML(r,wf){if(r?.kind==='workspace')return  || '<span class="run-meta-chip">对话工作区</span>'
+web/app/runs.js:1157 tpl$ | -chip">对话工作区</span>'; if(runIsGroupMode(r))return  || `<span class="run-meta-chip">历史协作记录</span><span class="run-meta-chip">冷冻 SOP v${wf.sopCheckpoint?.workflow?.version||wf.version||1}</span>`
+web/app/runs.js:1180 str |  const host=$('#runDetail');if(!r){host.innerHTML= || '<div class="empty-properties"><div>◷</div><b>选择一次运行</b><p>节点状态、产物和执行轨迹会显示在这里</p></div>'
+web/app/runs.js:1189 str | workflow||{id:r.workflowId||'',name:r.workflowId|| || '流程'
+web/app/runs.js:1194 str | L(ctx.project?.key||'TASK')}-${ctx.issue.number}`: || '独立运行'
+web/app/runs.js:1201 str | ab)?state.runDetailTab:'overview'; const runTabs=[ || 'overview:概览'
+web/app/runs.js:1201 str | etailTab:'overview'; const runTabs=['overview:概览', || 'trace:实时轨迹'
+web/app/runs.js:1201 str | rview'; const runTabs=['overview:概览','trace:实时轨迹', || 'logs:Worker日志'
+web/app/runs.js:1201 str | nTabs=['overview:概览','trace:实时轨迹','logs:Worker日志', || 'workspace:工作区'
+web/app/runs.js:1202 str | ,'workspace:工作区']; if(previewEnabled)runTabs.push( || 'preview:前端预览'
+web/app/runs.js:1203 str | nabled)runTabs.push('preview:前端预览'); runTabs.push( || 'eval:智能评测'
+web/app/runs.js:1204 tpl$ | 前端预览'); runTabs.push('eval:智能评测'); host.innerHTML= || `<div class="run-detail-main"><header class="run-detail-header"><div class="run-detail-topbar"><button class="button ghost small run-back-inline" data-run-back>← 返回运行列表</button><div class="run-breadcrumb"><span>${issueRef}</span><i>›</i><span>${escapeHTML(wf.name)}</span></div>${r.executionContext?.parentRunId?`
+web/app/runs.js:1204 tpl$ | -open-issue="${escapeHTML(issueId)}">打开需求</button> || `:''}${!r.pauseRequested?refreshRunSOPButtonHTML(r):''}<button class="button ghost small" data-open-flow>查看流程定义</button>${['queued','running','waiting'].includes(r.status)?'<button class="button danger-outline small" data-cancel-run>取消运行</button>':'<button class="button danger-outline small" data-delete-run>删除记录</button>'}</div></div><div class="run-header-main"><div><h2>${escapeHTML(ctx.issue?.ti
+web/app/runs.js:1204 tpl$ | ode="${escapeHTML(failedNodeId(r))}">手动通过</button> || `:''}</div></div><div class="run-header-meta"><span class="run-meta-chip run-id-chip" title="${escapeHTML(r.id)}">Run <code>${escapeHTML(r.id.slice(-12))}</code><button type="button" class="run-id-copy" data-copy-run title="复制完整 Run ID" aria-label="复制 Run ID"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="5.5" y="5.5
+web/app/runs.js:1204 tpl$ | active':''}" data-run-tab="${k}">${label}</button> || `}).join('')}</div></div></div><div class="run-pane" data-run-pane="overview" ${runDetailTab==='overview'?'':'hidden'}><section class="run-context-grid">${runProgressCellHTML(r,wf,progress,graphNodes)}<div data-run-usage>${liveUsageHTML(r)}</div><div><span>交付物</span><b>${(r.artifacts||[]).length} 个不可变快照</b><small>按节点和尝试次数保留版本</small></div></section></section>${alignPanelHTML}${runIsGroupMode(r)?`
+web/app/runs.js:1204 tpl$ | graphNodes.length} 个节点可展开审计</span></div></summary> || `:''}<section class="run-graph-section"><div class="section-heading"><div><h3>节点执行拓扑</h3><span>点击节点查看该节点的输出、产物和执行事件</span></div><div class="graph-legend"><span><i class="succeeded"></i>完成</span><span><i class="running"></i>运行中</span><span><i class="waiting_approval"></i>待审批</span><span><i></i>未开始</span></div></div><div class="run-graph">${graphNodes.map((n,index)=>{const gv=graphNodeView(r,n.id),m
+web/app/runs.js:1204 tpl$ | <small>${escapeHTML(gv.text)}</small></div>${arts? || `<em>${arts} 产物</em>`
+web/app/runs.js:1204 tpl$ | ll></div>${arts?`<em>${arts} 产物</em>`:''}</button> || `}).join('')}</div></section><div class="node-drilldown"><section class="node-inspector"><div class="section-heading"><div class="node-inspector-title"><h3>${escapeHTML(selected?.name||'节点详情')}</h3><span class="node-activity-inline${inspectorRunning?' is-running':''}" ${nr.activity?'':'hidden'}>当前活动：<b>${escapeHTML(nr.activity||'')}</b></span><span class="node-inspector-model">${escapeHTML(nr.prov
+web/app/runs.js:1204 tpl$ | der||'未分配')}${nr.model?` · ${escapeHTML(nr.model)} || `:''}</span></div><span class="status node-inspector-status ${nr.status||'pending'}${inspectorRunning?' is-running':''}">${statusText(nr.status)||'待执行'}</span></div><div class="node-facts"><div><span>执行次数</span><b>${nr.attempt||0}</b></div><div><span>返工</span><b>${nr.reworkCount||0}</b></div><div><span>Token</span><b>${formatTokens(nr.usage?.totalTokens)}</b></div><div><span>工具调用</span><b>${nr.too
+web/app/runs.js:1204 tpl$ | apeHTML(displayNodeOutput(nr.output))}</pre></div> || `:'<div class="node-output empty"><b>节点输出</b><p>节点完成后，结构化输出会显示在这里。</p></div>'}<div class="runtime-details"><span>Sandbox <code>${escapeHTML(nr.sandboxId||'—')}</code></span><span>Session <code>${escapeHTML(nr.sessionId||'—')}</code></span></div></section><section class="node-artifacts"><div class="section-heading"><div><h3>节点交付物</h3><span>${nodeArtifacts.length} 个版本</span></div></div><div class="n
+web/app/runs.js:1204 tpl$ | '').slice(0,10)}</small></div><i>预览 ›</i></button> || `).join('')||'<div class="empty-inline"><span>◇</span><p>此节点还没有登记交付物</p></div>'}</div></section></div>${runIsGroupMode(r)?'</details>':''}</div><div class="run-pane" data-run-pane="trace" ${runDetailTab==='trace'?'':'hidden'}><section class="trace-section"><div class="section-heading"><div><h3>${telemetrySectionTitle(telAdapter)}</h3><span>${telPage?`
+web/app/runs.js:1204 tpl$ | er)}</h3><span>${telPage?`${telemetry.length} 条已加载 || `:'加载最近 100 条'}</span></div><div class="trace-heading-actions">${telemetrySourceTabs(telAdapter,'data-tel-adapter')}${telPage?.hasMore?`
+web/app/runs.js:1204 tpl$ | ne"><p>${telemetryEmptyHint(telAdapter)}</p></div> || `):'<div class="empty-inline"><p>正在加载轨迹…</p></div>'}</div></section></div><div class="run-pane" data-run-pane="logs" ${runDetailTab==='logs'?'':'hidden'}><section class="worker-log-section"><div class="section-heading"><div><h3>Worker 日志</h3><span>${logPage?`
+web/app/runs.js:1204 tpl$ | ge?`${visibleWorkerLogs(logPage.items).length} 条调用 || `:(logBusy?'正在接收…':'实时加载最近调用')}</span></div><div class="worker-log-heading-actions">${logPage?.hasMore?`
+web/app/runs.js:1204 tpl$ | n ghost small" data-logs-more>加载更早的 100 条</button> || `:''}</div></div><div class="worker-log-feed">${logPage?(visibleWorkerLogs(logPage.items).map(logLineHTML).join('')||'<div class="empty-inline"><p>该节点没有日志</p></div>'):'<div class="empty-inline"><p>正在加载 Worker 实时日志…</p></div>'}</div></section></div></div>`
+web/app/runs.js:1207 str | a-cancel-run]')?.insertAdjacentHTML('beforebegin', || '<button class="button ghost small" data-pause-run>暂停运行</button>'
+web/app/runs.js:1218 str | l-run]')?.replaceChildren(document.createTextNode( || '取消排队'
+web/app/runs.js:1219 str | un-detail-header')?.insertAdjacentHTML('afterend', || '<div class="approval-callout queued-run-callout"><b>排队中，获得项目名额后自动启动</b><p>每个项目最多同时占用 10 条顶层 SOP，子 SOP 共享父级名额；未获准入和成功运行不占名额；一旦获准入即占用，失败、待确认、暂停及获准入后取消仍占用名额。可取消排队后删除记录。</p></div>'
+web/app/runs.js:1223 str | ader-main .status');if(status){status.textContent= || '已暂停'
+web/app/runs.js:1231 tpl$ | 'afterend',childCallout); if(pg.child){const note= || `<p class="child-sop-trace-note">这是 SOP 节点，下面显示的是子 SOP 运行 <code>${escapeHTML(pg.runId.slice(-12))}</code> 全部节点的内容。</p>`
+web/app/runs.js:1234 tpl$ | ssName='graph-stage-name';captionName.textContent= || `阶段 ${index+1}${stage.length>1?`
+web/app/runs.js:1234 tpl$ | rents.length)button.querySelector('small').append( || ` · 上游 ${parents.join('、')}`
+web/app/runs.js:1237 str | un]')?.addEventListener('click',()=>copyText(r.id, || 'Run ID 已复制'
+web/app/runs.js:1237 str | 'click',()=>copyText(displayNodeOutput(nr.output), || '节点输出已复制'
+web/app/runs.js:1237 str | ener('click',async ()=>{if(await afConfirm({title: || '取消运行确认'
+web/app/runs.js:1237 str | nfirm({title:'取消运行确认',message:r.status==='queued'? || '确定取消排队？此运行将不会启动，之后可删除记录。'
+web/app/runs.js:1237 str | ge:r.status==='queued'?'确定取消排队？此运行将不会启动，之后可删除记录。': || '确定取消这次运行？正在执行的节点会被终止。'
+web/app/runs.js:1237 str | 次运行？正在执行的节点会被终止。',confirmText:r.status==='queued'? || '取消排队'
+web/app/runs.js:1237 str | 行的节点会被终止。',confirmText:r.status==='queued'?'取消排队': || '确认取消'
+web/app/runs.js:1237 str | ick=async ()=>{const reason=await afPrompt({title: || '打回返工'
+web/app/runs.js:1237 str | const reason=await afPrompt({title:'打回返工',message: || '请输入打回原因：'
+web/app/runs.js:1237 str | mpt({title:'打回返工',message:'请输入打回原因：',defaultValue: || '验证未通过，请修复后重新提交'
+web/app/runs.js:1255 str | }catch(e){}}toast(fallbackCopyText(value)?message: || '复制失败，请手动复制'
+web/app/runs.js:1269 str |  a.remove(); URL.revokeObjectURL(url); toast( || '已导出全部 Worker 日志，可发给 AI 复盘'
+web/app/runs.js:1273 str | on:1,threshold:70,dimensions:[ {id:'control',name: || '控制流健康'
+web/app/runs.js:1273 str | ,dimensions:[ {id:'control',name:'控制流健康',question: || '节点是否多次循环、返工或打回？'
+web/app/runs.js:1274 str | :'节点是否多次循环、返工或打回？',weight:25}, {id:'latency',name: || '耗时与等待'
+web/app/runs.js:1274 str | ',weight:25}, {id:'latency',name:'耗时与等待',question: || '单节点是否占了大部分执行时间？'
+web/app/runs.js:1275 str | on:'单节点是否占了大部分执行时间？',weight:20}, {id:'tools',name: || '工具浪费'
+web/app/runs.js:1275 str | 时间？',weight:20}, {id:'tools',name:'工具浪费',question: || '是否有同工具连续失败或空转调用？'
+web/app/runs.js:1276 str | :'是否有同工具连续失败或空转调用？',weight:20}, {id:'tokens',name: || 'Token 效率'
+web/app/runs.js:1276 str | weight:20}, {id:'tokens',name:'Token 效率',question: || 'Token 是否集中在单一节点？'
+web/app/runs.js:1277 str | Token 是否集中在单一节点？',weight:15}, {id:'recovery',name: || '错误恢复'
+web/app/runs.js:1277 str | ',weight:15}, {id:'recovery',name:'错误恢复',question: || '相同错误是否反复出现？'
+web/app/runs.js:1278 str | ion:'相同错误是否反复出现？',weight:10}, {id:'delivery',name: || '交付完整'
+web/app/runs.js:1278 str | ',weight:10}, {id:'delivery',name:'交付完整',question: || '终态、产物和验证信号是否齐全？'
+web/app/runs.js:1290 tpl$ | 'cancelled'].includes(run.status); const heroCard= || `<div class="run-eval-hero">
+    <div class="run-eval-hero-info">
+      <div class="run-eval-badge"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2l2.4 7.2L21.6 12l-7.2 2.4L12 21.6l-2.4-7.2L2.4 12l7.2-2.4L12 2z"/></svg> AI 智能评测与架构巡检</div>
+      <h2>SOP 执行效果与准入质量评估</h2>
+      <p>基于大模型深度审视全链路 Trace，交叉评估目标达成度、产物契约与门禁防线，自动生成可确认落地的
+web/app/runs.js:1323 tpl$ | > </div> </div>`; if(!isTerminal){ return  || `<section class="run-eval-section">${heroCard}<div class="run-eval-empty-card"><div class="empty-icon"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><h3>运行执行中，请等待结束后评测</h3><p>SOP 执行全部节点完成后，将汇聚完整的链路 Trace、Token 消耗分布与交付物契约，届时可在此一键启动质量与准入评测。</p></div></section>`
+web/app/runs.js:1327 tpl$ | `; } if(busy||rec?.status==='running'){ return  || `<section class="run-eval-section">${heroCard}<div class="run-eval-evaluating-card"><div class="evaluating-pulse-head"><span class="evaluating-spinner"></span><div><h4>大模型全链路 Trace 深度评测中...</h4><p>正在分析节点流转拓扑、工具调用频次、异常返工日志与产物交付契约</p></div></div><div class="run-eval-thoughts">${thoughts.map(t=>`
+web/app/runs.js:1327 tpl | ht-dot"></span><span>${escapeHTML(t)}</span></div> || `).join('')||'<div class="thought-item"><span class="thought-dot"></span><span>正在整理执行链路 Trace 并组织评测 Prompt...</span></div>'}</div></div></section>`
+web/app/runs.js:1331 tpl$ | ection>`; } if(rec?.status==='failed'){ return  || `<section class="run-eval-section">${heroCard}<div class="run-eval-error-card"><div class="error-head"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><b>评测执行失败</b></div><pre>${escapeHTML(rec.error||'模型未返回结果')}</pre><p class="error-tip">
+web/app/runs.js:1335 tpl$ | v></section>`; } if(!rec||!rec.status){ return  || `<section class="run-eval-section">${heroCard}<div class="run-eval-pre-dashboard"><div class="eval-pre-title-row"><div class="eval-pre-title"><span class="eval-pre-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/
+web/app/runs.js:1335 tpl | s="eval-dim-q">${escapeHTML(d.question)}</p></div> || `).join('')}</div><div class="eval-pre-footer-tip"><span class="tip-sparkle"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span><p>评测完成后，不仅将生成各维度量化得分和缺陷根因证据链，还将提供针对任务书（Prompt）、门禁（Gate）以及重试策略的<b>「一键合并优化建议」</b>，帮助持续沉淀企业级优质 SOP。</p
+web/app/runs.js:1345 tpl$ |  const findings=(rec.result?.findings||[]).map(f=> || `<li class="finding-item ${escapeHTML(f.severity||'info')}"><div class="finding-head"><span class="finding-badge ${escapeHTML(f.severity||'info')}">${escapeHTML(f.severity==='error'?'严重缺陷':f.severity==='warn'?'改进建议':'信息备忘')}</span><b class="finding-dim">${escapeHTML(f.dimension||'')}</b></div><p class="finding-msg">${escapeHTML(f.message||'')}</p>${f.nodeId?`
+web/app/runs.js:1345 str | ce">节点：<b>${escapeHTML(f.nodeId)}</b>${f.evidence? || ' · 证据：'
+web/app/runs.js:1346 str | ns||[]).map(item=>runEvalRecHTML(item)).join('')|| || '<div class="empty-inline"><p>本次评测未发现阻止落地的缺陷，无需额外规则补丁。</p></div>'
+web/app/runs.js:1348 tpl$ | e"><p>本次评测未发现阻止落地的缺陷，无需额外规则补丁。</p></div>'; return  || `<section class="run-eval-section">${heroCard}<div class="run-eval-result-grid"><div class="run-eval-scorecard"><div class="eval-score-ring-wrap ${rec.passed?'good':(rec.score>=60?'fair':'weak')}"><div class="eval-score-num">${rec.score||0}</div><div class="eval-score-label">${rec.passed?'达标通过':'未达标'}</div></div><div class="eval-score-details"><div class="eval-score-meta"><span><b>模型：</b>${escapeH
+web/app/runs.js:1348 tpl$ | l class="run-eval-findings">${findings}</ul></div> || `:''}<div class="run-eval-recs-box"><div class="recs-head"><h4>可落地改进建议 <span>(${(rec.result?.recommendations||[]).length})</span></h4><p>点击「应用此修改」可直接将治理规则回写到 SOP 流程或角色定义中</p></div><div class="recs-list">${recs}</div></div></section>`
+web/app/runs.js:1353 tpl$ | em.set||(item.text?{text:item.text}:null); return  || `<article class="run-eval-rec ${applied?'is-applied':''}"><div><b>${escapeHTML(item.title||item.action||'建议')}</b><p>${escapeHTML(item.rationale||'')}</p><small>${escapeHTML(item.target||'')} ${escapeHTML(item.action||'')} ${item.nodeId?('· '+escapeHTML(item.nodeId)):''}</small>${patch?`
+web/app/runs.js:1353 tpl | apply-eval="${escapeHTML(item.id)}">应用此修改</button> || `:'<small>仅建议</small>')}</article>`
+web/app/runs.js:1400 str | d','cancelled'].includes(run.status))return toast( || '请等 SOP 跑完后再评测'
+web/app/runs.js:1401 str | oast('请等 SOP 跑完后再评测'); if(!runEvalHasKey()){toast( || '请先在个人配置中配置自己的 CodeBuddy API Key'
+web/app/runs.js:1402 str | rn} state.runEvalBusy=true;state.runEvalThoughts=[ || '正在提交评测…'
+web/app/runs.js:1422 str | RunEvalRec(run,recId){ if(!await afConfirm({title: || '应用评测建议'
+web/app/runs.js:1422 str | cId){ if(!await afConfirm({title:'应用评测建议',message: || '确认把这条建议写进当前 SOP 或角色？不会改这次运行的历史快照。'
+web/app/runs.js:1422 str | e:'确认把这条建议写进当前 SOP 或角色？不会改这次运行的历史快照。',confirmText: || '确认应用'
+web/app/runs.js:1428 str | rkflows=workflows;state.data.agents=agents; toast( || '已写回当前定义'
+web/app/runs.js:1442 str |  const host=$('#artifactPreview'); host.innerHTML= || '<div class="artifact-loading">正在加载交付物…</div>'
+web/app/runs.js:1452 tpl$ | urce'; function renderModal(){ host.innerHTML= || `
+        <div class="artifact-preview-head">
+          <div class="artifact-preview-head-left">
+            <span class="artifact-preview-icon">${isMd?'MD':'{}'}</span>
+            <div class="artifact-preview-titles">
+              <h2>${escapeHTML(artifact.name)}</h2>
+              <div class="artifact-preview-sub">
+                <span>${escapeHTML(artifact.path)}</span>
+             
+web/app/runs.js:1476 tpl$ | ="source">📄 源码</button> </div>  || ` : ''}
+            <div class="artifact-evidence-badges">
+              <span>SHA-256: <code>${escapeHTML((artifact.sha256||'—').slice(0, 16))}…</code></span>
+              <span>${Math.max(1, Math.ceil((artifact.size||0)/1024))} KB</span>
+            </div>
+          </div>
+          <div class="artifact-toolbar-right">
+            <button type="button" class="button ghost small" data-cop
+web/app/runs.js:1499 str | ta-copy-artifact]').onclick=()=>copyText(content,  || '产物内容已复制到剪贴板'
+web/app/runs.js:1514 str | 'pre code')?.textContent||''; copyText(codeText,  || '代码片段已复制'
+web/app/runs.js:1521 tpl$ |  } renderModal(); }catch(e){ host.innerHTML= || `<div class="empty-properties"><b>交付物加载失败</b><p>${escapeHTML(e.message)}</p></div>`
+web/app/runs.js:1531 str | s==='cancelled'?(run.admissionState==='unstarted'? || '已取消排队'
+web/app/runs.js:1531 str | celled'?(run.admissionState==='unstarted'?'已取消排队': || '运行已取消'
+web/app/runs.js:1531 str | ':'运行已取消'):runControlToast(run,action==='approve'? || '已批准，流程继续'
+web/app/runs.js:1531 str | n,action==='approve'?'已批准，流程继续':action==='reject'? || '已打回，开始返工'
+web/app/runs.js:1531 str | 继续':action==='reject'?'已打回，开始返工':action==='retry'? || '已从中断处继续'
+web/app/runs.js:1531 str | ==='reject'?'已打回，开始返工':action==='retry'?'已从中断处继续': || '已选择不重试'
+web/app/runs.js:1549 tpl$ | t=Number(mine?.runLimit)||0; const label=personal? || `个人机器 ${mine?.name||id.slice(-8)} · 不受项目 10 条 SOP 限额${machineLimit>0?`
+web/app/runs.js:1549 str | hineLimit} 条`:''}`:ec.executionPool==='cloud'?(id? || '云端执行池'
+web/app/runs.js:1549 str | t} 条`:''}`:ec.executionPool==='cloud'?(id?'云端执行池': || '等待云端执行机器'
+web/app/runs.js:1549 tpl$ | c.executionPool==='cloud'?(id?'云端执行池':'等待云端执行机器'): || `执行机器 ${mine?.name||id.slice(-8)}`
+web/app/runs.js:1550 tpl$ | 执行机器'):`执行机器 ${mine?.name||id.slice(-8)}`; return  || `<span class="run-meta-chip" title="${escapeHTML(id||'尚未分配')}">${escapeHTML(label)}</span>`
+web/app/runs.js:1555 str | onBlocked(id))return; if(!(await afConfirm({title: || '删除运行记录'
+web/app/runs.js:1555 str | urn; if(!(await afConfirm({title:'删除运行记录',message: || '确定删除这条运行记录？其节点状态、日志、产物以及对应执行工作区和沙箱会一并清理，且不可恢复。'
+web/app/runs.js:1555 str | 以及对应执行工作区和沙箱会一并清理，且不可恢复。',danger:true,confirmText: || '确定删除'
+web/app/runs.js:1558 str | ncodeURIComponent(id)}`,{method:'DELETE'}); toast( || '运行记录已删除'
+web/app/projects.js:4 str | T')} · ${escapeHTML(p.name)}</option>`).join('')|| || '<option value="">暂无项目</option>'
+web/app/projects.js:11 str | '#projectContextName').textContent=project?.name|| || '暂无项目'
+web/app/projects.js:11 str | xtDescription').textContent=project?.description|| || '工作台数据会按项目整体切换'
+web/app/projects.js:14 tpl$ | id).length; $('#projectContextMetrics').innerHTML= || `<button type="button" data-issue-filter="" class="${!state.issueRunFilter?'on':''}"><span>工作项</span><b>${projectIssues.length}</b></button><button type="button" data-issue-filter="active" class="${state.issueRunFilter==='active'?'on':''}"><span>正在推进</span><b>${active}</b></button><button type="button" data-issue-filter="attention" class="${attention?'danger':''} ${state.issueRunFilter==='attentio
+web/app/projects.js:23 str |  } function userCombobox(name,selected,emptyLabel= || '请选择用户'
+web/app/projects.js:26 tpl$ | ected)?'<i>✓</i>':''}</button>`).join(''); return  || `<div class="user-combobox" data-user-combobox><input type="hidden" name="${escapeHTML(name)}" value="${selected?escapeHTML(String(selected)):''}" ${attributes}><button type="button" class="user-combobox-trigger" data-user-combobox-trigger aria-haspopup="listbox" aria-expanded="false"><span>${escapeHTML(label)}</span><i>⌄</i></button><div class="user-combobox-panel" data-user-combobox-panel hidden
+web/app/projects.js:42 str | }); } const PROJECT_ADMIN_TABS=[{id:'basic',label: || '基本信息'
+web/app/projects.js:42 str | TABS=[{id:'basic',label:'基本信息'},{id:'repos',label: || '代码仓库'
+web/app/projects.js:42 str | 息'},{id:'repos',label:'代码仓库'},{id:'members',label: || '项目成员'
+web/app/projects.js:42 str | 仓库'},{id:'members',label:'项目成员'},{id:'tapd',label: || '高级设置'
+web/app/projects.js:115 tpl$ | .data?.workflows||[]).find(x=>x.id===id);return w? || `${w.generic?'通用 · ':''}${w.name}`
+web/app/projects.js:122 tpl$ | p.key||p.name||'P'); const repoFact=repos.length ? || `<span class="pa-fact" title="${def?'默认仓库':'已绑定仓库，未设默认'}">${paIcon('repo',12)}<span>${escapeHTML((def||repos[0]).name||'仓库')}${repos.length>1?`
+web/app/projects.js:123 tpl$ | ength>1?` +${repos.length-1}`:''}</span></span>` : || `<span class="pa-fact warn">${paIcon('alert',12)}<span>未绑定代码仓库</span></span>`
+web/app/projects.js:126 tpl$ | -av more">+${people.length-3}</span>`:''); return  || `<article class="pa-card" tabindex="0" role="link" data-project-open="${escapeHTML(p.id)}" aria-label="打开项目 ${escapeHTML(p.name||p.id)}">
+    <div class="pa-card-top"><span class="pa-mark" style="background:${safeColor(p.color)}">${escapeHTML(key.slice(0,2).toUpperCase())}</span><div class="pa-card-m"><h3><span title="${escapeHTML(p.name||'')}">${escapeHTML(p.name||p.id)}</span>${p.id===ctx.curre
+web/app/projects.js:129 str | ts">${repoFact}${sop?`<span class="pa-fact" title= || "默认 SOP"
+web/app/projects.js:129 tpl$ | Id)}">${paIcon('tapd',12)}<span>TAPD</span></span> || `:''}</div>
+    <div class="pa-card-foot"><div class="pa-avs">${avatars}</div><div class="pa-stats"><span><b>${issues.length}</b> 需求</span>${active?`
+web/app/projects.js:142 str | ength)host.innerHTML=projectAdminEmptyHTML('repo', || '还没有项目'
+web/app/projects.js:142 str | st.innerHTML=projectAdminEmptyHTML('repo','还没有项目', || '项目是需求、仓库与团队的统一边界，先创建第一个项目。'
+web/app/projects.js:142 str | yHTML('repo','还没有项目','项目是需求、仓库与团队的统一边界，先创建第一个项目。', || '<button type="button" class="button primary" data-project-new>＋ 新建项目</button>'
+web/app/projects.js:143 str | gth)host.innerHTML=projectAdminEmptyHTML('search', || '没有匹配的项目'
+web/app/projects.js:143 str | nnerHTML=projectAdminEmptyHTML('search','没有匹配的项目', || '换个关键词试试，或者新建一个项目。'
+web/app/projects.js:143 str | nEmptyHTML('search','没有匹配的项目','换个关键词试试，或者新建一个项目。', || '<button type="button" class="button ghost" data-project-clear>清除筛选</button>'
+web/app/projects.js:152 str | dentDesc(creating,custom){return creating?(custom? || '标识用于接口与链接，创建后不可修改；Key 是需求编号前缀与头像文字，最多 6 位。'
+web/app/projects.js:152 str | stom?'标识用于接口与链接，创建后不可修改；Key 是需求编号前缀与头像文字，最多 6 位。': || '根据项目名称自动生成，一般无需修改。'
+web/app/projects.js:152 str | 改；Key 是需求编号前缀与头像文字，最多 6 位。':'根据项目名称自动生成，一般无需修改。'): || '标识用于接口与链接，创建后不可修改。'
+web/app/projects.js:154 tpl$ | ction projectIdentHTML(d,creating,custom){ return  || `<div class="pa-ident" data-pa-ident-view${custom?' hidden':''}><code data-pa-ident-id class="${d.id?'':'ph'}" title="${escapeHTML(d.id||'')}">${escapeHTML(d.id||'输入名称后生成')}</code><span class="pa-ident-sep">·</span><code data-pa-ident-key class="${d.key?'':'ph'}">${escapeHTML(String(d.key||'—').toUpperCase())}</code><button type="button" class="pa-link" data-pa-ident-edit>${creating?'自定义':'修改 Key'
+web/app/projects.js:159 str | c}" style="background:${c};color:${c}" aria-label= || "品牌色 ${c}"
+web/app/projects.js:159 tpl$ | essed="${c===String(cur).toLowerCase()}"></button> || `).join('')}<label class="pa-sw pa-sw-custom${preset?'':' on'}" title="自定义颜色" style="color:${cur}${preset?'':`
+web/app/projects.js:159 tpl$ | style="color:${cur}${preset?'':`;background:${cur} || `}"><input type="color" data-pa-color-custom value="${cur.length===7?cur:'#536dfe'}" aria-label="自定义品牌色"></label><code class="pa-sw-hex" data-pa-color-hex>${escapeHTML(String(cur).toUpperCase())}</code><input type="hidden" name="color" value="${escapeHTML(cur)}"></div>`
+web/app/projects.js:164 tpl$ | ==='function'?knownTime(r.updatedAt):null; return  || `<article class="pa-rc" data-repo-card="${escapeHTML(r.id)}">
+    <div class="pa-rc-top"><span class="pa-rc-ic">${paIcon('repo',15)}</span><div class="pa-rc-m"><h4 title="${escapeHTML(name)}">${escapeHTML(name)}</h4><code title="${escapeHTML(repoDisplayPath(info,path))}">${escapeHTML(repoDisplayPath(info,path))}</code></div><div class="pa-rc-acts"><button type="button" class="pa-icon-btn" data-re
+web/app/projects.js:166 str | n>${r.integrateBranch?`<span class="pa-tag" title= || "集成分支"
+web/app/projects.js:166 tpl$ | merge',11)}${escapeHTML(r.integrateBranch)}</span> || `:'<span class="pa-tag muted">未配置集成分支</span>'}${isDefault?'<span class="pa-tag def">默认</span>':''}</div>
+    <div class="pa-rc-foot"><small>${updated?`
+web/app/projects.js:171 str | !repos.length)return projectAdminEmptyHTML('repo', || '还没有绑定代码仓库'
+web/app/projects.js:171 str | h)return projectAdminEmptyHTML('repo','还没有绑定代码仓库', || '绑定后，Agent 执行 SOP 时会自动克隆仓库并在工作分支上提交。第一个仓库会自动设为默认。'
+web/app/projects.js:171 tpl | 绑定后，Agent 执行 SOP 时会自动克隆仓库并在工作分支上提交。第一个仓库会自动设为默认。', || `<ol class="pa-steps"><li><span>1</span>粘贴 Git HTTPS 链接或 Git SSH 地址</li><li><span>2</span>确认分支</li><li><span>3</span>保存即生效</li></ol><button type="button" class="button primary" data-repo-add>＋ 添加第一个仓库</button>`
+web/app/projects.js:172 tpl$ | imary" data-repo-add>＋ 添加第一个仓库</button>`); return  || `<div class="pa-rgrid">${repos.map(r=>repoCardHTML(r,r.id===defaultId)).join('')}<button type="button" class="pa-rc-add" data-repo-add><i>${paIcon('plus',14)}</i><b>添加仓库</b></button></div>`
+web/app/projects.js:178 str | id)}</option>`).join(''); const repoDesc=creating? || '保存项目后，在「代码仓库」中添加。'
+web/app/projects.js:178 str | epoDesc=creating?'保存项目后，在「代码仓库」中添加。':repos.length? || '只能从「代码仓库」中已绑定的仓库里选。'
+web/app/projects.js:178 str | 后，在「代码仓库」中添加。':repos.length?'只能从「代码仓库」中已绑定的仓库里选。': || '还没有仓库，可在「代码仓库」中添加。'
+web/app/projects.js:179 str | 库里选。':'还没有仓库，可在「代码仓库」中添加。'; const basic=paSection( || '项目身份'
+web/app/projects.js:179 str | 还没有仓库，可在「代码仓库」中添加。'; const basic=paSection('项目身份', || '项目在工作台、需求和通知里的显示方式。'
+web/app/projects.js:179 tpl$ | onst basic=paSection('项目身份','项目在工作台、需求和通知里的显示方式。', || `<div class="pa-rows">
+      ${paRow('项目名称','显示在项目列表与工作台顶部。',`
+web/app/projects.js:180 str | d.name||'')}" required maxlength="80" placeholder= || "例如 Web Console"
+web/app/projects.js:180 tpl$ | uired maxlength="80" placeholder="例如 Web Console"> || `,{required:true})}
+      ${paRow('标识与 Key',projectIdentDesc(creating,custom),projectIdentHTML(d,creating,custom),{descAttr:' data-pa-ident-desc'})}
+      ${paRow('品牌色','用于项目头像和标签。',projectColorHTML(d.color))}
+      ${paRow('项目说明','可选，简要说明项目范围，Agent 会把它作为上下文。',`
+web/app/projects.js:183 str | pa-input" name="description" rows="3" placeholder= || "这个项目负责什么？"
+web/app/projects.js:184 str | ')}</textarea>`,{stack:true})} </div>`)+paSection( || '默认设置'
+web/app/projects.js:184 str | xtarea>`,{stack:true})} </div>`)+paSection('默认设置', || '新建需求时自动带上的流程与仓库。'
+web/app/projects.js:184 tpl$ | e})} </div>`)+paSection('默认设置','新建需求时自动带上的流程与仓库。', || `<div class="pa-rows">
+      ${creating&&!Number(state.currentUser?.id)?paRow('项目 Owner','项目的默认责任人，创建后可在「项目成员」中调整。',userCombobox('ownerId',d.ownerId,'请选择项目 Owner'),{required:true}):''}
+      ${paRow('默认 SOP','用于新需求的默认流程；已关联 SOP 的需求保留原绑定。',projectDefaultSOPField(d),{required:true})}
+      ${paRow('默认代码仓库',repoDesc,`
+web/app/projects.js:190 tpl$ | []).map((m,i)=>{const u=userById(m.userId);return  || `<div class="member-row pa-member-row" data-member-row="${i}"><span class="member-avatar">${userAvatarHTML(u,48)}</span><span class="member-kind">成员</span>${userCombobox(`
+web/app/projects.js:190 tpl$ | "member-kind">成员</span>${userCombobox(`member-${i} || `,m.userId,'请选择项目成员','data-m="userId"')}<button type="button" data-remove-member="${i}" title="移除成员" aria-label="移除成员">×</button></div>`
+web/app/projects.js:191 str | n></div>`}).join(''); const memberPanel=paSection( || '负责人'
+web/app/projects.js:191 str | v>`}).join(''); const memberPanel=paSection('负责人', || 'Owner 是项目的默认责任人，接收需要介入的通知。'
+web/app/projects.js:191 tpl$ | anel=paSection('负责人','Owner 是项目的默认责任人，接收需要介入的通知。', || `<div class="pa-rows"><div class="member-row owner-row pa-member-row"><span class="member-avatar owner">${userAvatarHTML(owner,48)}</span><span class="member-kind owner">Owner</span>${userCombobox('ownerId',d.ownerId,'请选择项目 Owner')}<span></span></div></div>`
+web/app/projects.js:192 str | 项目 Owner')}<span></span></div></div>`) +paSection( || '成员'
+web/app/projects.js:192 str | ner')}<span></span></div></div>`) +paSection('成员', || '其他成员无需设置角色，可查看和推进项目内所有需求。'
+web/app/projects.js:192 tpl$ | iv>`) +paSection('成员','其他成员无需设置角色，可查看和推进项目内所有需求。', || `<div class="pa-rows" id="memberRows">${members||'<div class="pa-rows-empty">还没有其他成员</div>'}</div>`
+web/app/projects.js:192 str | <div class="pa-rows-empty">还没有其他成员</div>'}</div>`, || '<button id="addMember" type="button" class="button ghost small">＋ 添加成员</button>'
+web/app/projects.js:194 str | dPanel=(tapdIntegrationAvailable(saved)?paSection( || 'TAPD 需求池'
+web/app/projects.js:194 str | dIntegrationAvailable(saved)?paSection('TAPD 需求池', || '配置后可在需求页从 TAPD 导入需求，澄清结论会回写到 TAPD 单。'
+web/app/projects.js:194 tpl$ | 'TAPD 需求池','配置后可在需求页从 TAPD 导入需求，澄清结论会回写到 TAPD 单。', || `<div class="pa-rows">
+      ${paRow('Workspace ID','TAPD 项目 URL 中 /tapd_fe/ 后的数字。',`
+web/app/projects.js:195 str | ${escapeHTML(d.tapdWorkspaceId||'')}" placeholder= || "例如 20375341"
+web/app/projects.js:195 tpl$ | ')}" placeholder="例如 20375341" spellcheck="false"> || `)}
+      ${paRow('Iteration ID','可选，只导入该迭代内的需求。',`
+web/app/projects.js:196 str | ${escapeHTML(d.tapdIterationId||'')}" placeholder= || "留空导入全部"
+web/app/projects.js:197 str | 全部" spellcheck="false">`)} </div>`):'')+paSection( || '危险操作'
+web/app/projects.js:197 str | d)}${configured?paRow(`清除已保存的 TAPD 配置${configured? || ' <span class="pa-chip">当前已配置</span>'
+web/app/projects.js:197 tpl | nfigured?' <span class="pa-chip">当前已配置</span>':''} || `,'保存项目设置时同时清空 Workspace 与 Iteration，已导入的需求不受影响。',`
+web/app/projects.js:197 str | e="switch" ${d.tapdClear?'checked':''} aria-label= || "清除已保存的 TAPD 配置"
+web/app/projects.js:198 str | :''}</div>`); const panels={basic,repos:paSection( || '代码仓库'
+web/app/projects.js:198 str | iv>`); const panels={basic,repos:paSection('代码仓库', || 'Agent 执行 SOP 时会克隆这些仓库。仓库保存后立即生效，无需点「保存项目设置」。'
+web/app/projects.js:198 str | ed?.defaultRepositoryId||'')}</div>`,repos.length? || '<button type="button" class="button ghost small" data-repo-add>＋ 添加仓库</button>'
+web/app/projects.js:201 tpl | !=='basic'?'':panels[t.id]}</section>`).join('') + || `<div class="pa-savebar-dock"><div class="pa-savebar" data-pa-savebar inert><span class="pa-savebar-tx"><i></i><span data-pa-savebar-text>有未保存的修改</span></span><button type="button" class="button ghost" data-pa-discard>放弃修改</button><button type="submit" class="button primary" data-pa-submit>保存项目设置</button></div></div>`
+web/app/projects.js:205 str | ; const name=String(d.name||'').trim()||(creating? || '新项目'
+web/app/projects.js:206 str | AdminCrumb');if(crumb){crumb.textContent=creating? || '新建项目'
+web/app/projects.js:209 tpl$ | y?`<span class="pa-chip">${escapeHTML(key)}</span> || `:''}${!creating&&saved?.id===state.projectFilter?'<span class="pa-chip cur">当前工作台项目</span>':''}</h1><p>${escapeHTML(creating?'填写项目名称并创建，之后即可绑定代码仓库、邀请成员。':(d.description||''))}</p>${creating?'':`
+web/app/projects.js:223 str | d){b.setAttribute('aria-disabled','true');b.title= || '保存项目后可用'
+web/app/projects.js:236 str | ilId==='new'&&tab!=='basic'){if(!opt.silent)toast( || '保存项目后可用'
+web/app/projects.js:247 str | or('[data-pa-savebar-text]').textContent=creating? || '新项目尚未保存'
+web/app/projects.js:247 str | pa-savebar-text]').textContent=creating?'新项目尚未保存': || '有未保存的修改'
+web/app/projects.js:248 str | elector('[data-pa-discard]').textContent=creating? || '取消'
+web/app/projects.js:248 str | or('[data-pa-discard]').textContent=creating?'取消': || '放弃修改'
+web/app/projects.js:249 str | Selector('[data-pa-submit]').textContent=creating? || '创建项目'
+web/app/projects.js:249 str | r('[data-pa-submit]').textContent=creating?'创建项目': || '保存项目设置'
+web/app/projects.js:261 str | ident-key]'); if(idChip){idChip.textContent=d.id|| || '输入名称后生成'
+web/app/projects.js:340 str | .find(p=>p.id===id); if(!creating&&!saved){ toast( || '项目不存在或无权访问，已返回项目列表'
+web/app/projects.js:384 str | name=String(state.projectDraft?.name||'').trim()|| || '新项目'
+web/app/projects.js:385 str | .name||'').trim()||'新项目'; return afConfirm({title: || '放弃未保存的修改？'
+web/app/projects.js:385 tpl$ | 新项目'; return afConfirm({title:'放弃未保存的修改？',message: || `「${name}」有未保存的修改，离开后这些修改会丢失。`
+web/app/projects.js:385 str | ame}」有未保存的修改，离开后这些修改会丢失。`,danger:true,confirmText: || '放弃修改'
+web/app/projects.js:385 str | 修改会丢失。`,danger:true,confirmText:'放弃修改',cancelText: || '继续编辑'
+web/app/projects.js:419 str | rrors={}; renderProjectDetail({force:true});toast( || '已放弃未保存的修改'
+web/app/projects.js:441 str | canDeleteProject(project))return ''; return paRow( || '删除项目'
+web/app/projects.js:441 str | teProject(project))return ''; return paRow('删除项目', || '项目从列表中移除，需求、运行记录和设置保留，平台管理员可以恢复。有未结束的运行或启用中的定时任务时不能删除。'
+web/app/projects.js:441 tpl$ | 移除，需求、运行记录和设置保留，平台管理员可以恢复。有未结束的运行或启用中的定时任务时不能删除。', || `<button type="button" class="button danger-outline small" data-project-delete="${escapeHTML(project.id)}">删除项目</button>`
+web/app/projects.js:445 str | (!project)return; const ok=await afConfirm({title: || '删除项目'
+web/app/projects.js:445 tpl$ | n; const ok=await afConfirm({title:'删除项目',message: || `确定删除项目「${project.name||project.id}」吗？\n\n项目会从列表中移除，需求、运行记录和设置保留，可以恢复；标识 ${project.id} 仍被占用。`
+web/app/projects.js:445 str | 复；标识 ${project.id} 仍被占用。`,danger:true,confirmText: || '确定删除'
+web/app/projects.js:457 tpl$ | Hash('')); renderAll();renderProjectAdmin();toast( || `已删除项目「${project.name||project.id}」`
+web/app/projects.js:463 str | toryId===repo.id; const ok=await afConfirm({title: || '删除关联仓库'
+web/app/projects.js:463 tpl$ |  const ok=await afConfirm({title:'删除关联仓库',message: || `确定删除仓库「${repo.name||repo.gongfengProjectId||repo.id}」吗？已在执行中的 SOP 不受影响，该操作不可恢复。${isDefault?'\n\n这是当前的默认仓库，删除后默认仓库将变为「暂未绑定」。':''}`
+web/app/projects.js:463 str | 库，删除后默认仓库将变为「暂未绑定」。':''}`,danger:true,confirmText: || '确定删除'
+web/app/projects.js:471 tpl$ | id); renderAll();refreshProjectAdminRepos();toast( || `已删除仓库「${repo.name||repo.id}」`
+web/app/projects.js:492 tpl$ | (w=>w.id===current); const options=choices.map(w=> || `<option value="${escapeHTML(w.id)}" ${w.id===current?'selected':''}>${w.generic?'通用 · ':''}${escapeHTML(w.name)}</option>`
+web/app/projects.js:493 tpl$ | ${escapeHTML(w.name)}</option>`).join(''); return  || `<select name="workflowId" class="select" required><option value="">请选择默认 SOP</option>${missing?`
+web/app/projects.js:518 str | ={}){ if(!value.name)return {field:'name',message: || '项目名称不能为空'
+web/app/projects.js:519 str | 名称不能为空'}; if(!value.id)return {field:'id',message: || '项目标识不能为空'
+web/app/projects.js:520 str | 不能为空'}; if(!value.key)return {field:'key',message: || '项目 Key 不能为空'
+web/app/projects.js:521 tpl$ | lue.id.toLowerCase())))return {field:'id',message: || `项目标识「${value.id}」已被占用，请换一个`
+web/app/projects.js:522 str | `}; if(!creating&&!saved)return {field:'',message: || '项目不存在或无权访问'
+web/app/projects.js:523 str | ue.workflowId))return {field:'workflowId',message: || '请选择有效的默认 SOP'
+web/app/projects.js:524 str | if(!value.ownerId)return {field:'ownerId',message: || '请选择项目 Owner'
+web/app/projects.js:525 str | ome(m=>!m.userId))return {field:'members',message: || '请选择有效的项目成员'
+web/app/projects.js:526 str | ue.members.length)return {field:'members',message: || '项目成员不能重复'
+web/app/projects.js:549 str | dProjectId,creating); renderAll(); toast(creating? || '项目已创建，下一步绑定代码仓库'
+web/app/projects.js:549 str | g); renderAll(); toast(creating?'项目已创建，下一步绑定代码仓库': || '项目设置已保存'
+web/app/mcp.js:36 tpl$ | (item,query)); if(!items.length)return ''; return  || `<section class="mcp-catalog-suggest" aria-label="平台目录"><div><b>平台目录</b><span>通用模板按名称绑定这些 MCP，添加到本项目后即可使用。</span></div><div class="mcp-catalog-actions">${items.map(item=>`
+web/app/mcp.js:39 str | tId,button){ if(!state.projectFilter)return toast( || '请先选择项目'
+web/app/mcp.js:40 str | const label=button.textContent;button.textContent= || '添加中…'
+web/app/mcp.js:44 str | aved]; renderMCPManagement();renderAgents();toast( || '已添加到当前项目'
+web/app/mcp.js:74 tpl$ | ; if(!mcpImportPlainObject(value))throw new Error( || `${field} 必须是 JSON 对象`
+web/app/mcp.js:75 tpl$ | ontinue;if(typeof item==='object')throw new Error( || `${field}.${key} 必须是字符串`
+web/app/mcp.js:79 tpl$ | turn []; if(!Array.isArray(value))throw new Error( || `${field} 必须是 JSON 数组`
+web/app/mcp.js:80 tpl$ | ndex)=>{if(typeof item!=='string')throw new Error( || `${field}[${index}] 必须是字符串`
+web/app/mcp.js:86 str | '){ if(!mcpImportPlainObject(raw))throw new Error( || 'MCP server 配置必须是 JSON 对象'
+web/app/mcp.js:91 tpl$ | ttp','stdio'].includes(transport))throw new Error( || `不支持的 MCP transport：${transport}`
+web/app/mcp.js:93 str | alue.name||id||'').trim(); if(!id)throw new Error( || 'mcp.json 中的 server 缺少标识'
+web/app/mcp.js:94 tpl$ | alue.args;if(!Array.isArray(args))throw new Error( || `${id}.args 必须是数组`
+web/app/mcp.js:96 tpl$ | (timeout)||timeout<0||timeout>600)throw new Error( || `${id}.timeoutSec 需在 0–600 之间`
+web/app/mcp.js:98 tpl$ | f(transport==='http'&&!server.url)throw new Error( || `${id} 缺少 HTTP URL`
+web/app/mcp.js:99 tpl$ | nsport==='stdio'&&!server.command)throw new Error( || `${id} 缺少 command`
+web/app/mcp.js:103 str | payload)&&!Array.isArray(payload))throw new Error( || 'mcp.json 顶层必须是对象或数组'
+web/app/mcp.js:105 str | ay.isArray(root)){if(!root.length)throw new Error( || 'mcp.json 中没有 server'
+web/app/mcp.js:106 str | )} if(!mcpImportPlainObject(root))throw new Error( || 'mcpServers / servers 必须是对象或数组'
+web/app/mcp.js:109 str | Object(item)); if(!entries.length)throw new Error( || 'mcp.json 中没有可识别的 server'
+web/app/mcp.js:113 str | ce(/\u00a0/g,' ').trim();if(!text)throw new Error( || '请先粘贴 mcp.json 配置'
+web/app/mcp.js:117 str | JSON.parse(`{${fragment}}`)}catch{throw new Error( || '无法解析配置：请检查 JSON 引号、逗号和括号'
+web/app/mcp.js:129 str | ）`).join('；'); const choice=await afPrompt({title: || '选择要导入的 MCP'
+web/app/mcp.js:129 tpl$ | choice=await afPrompt({title:'选择要导入的 MCP',message: || `粘贴内容包含 ${candidates.length} 个 server：${listing}`
+web/app/mcp.js:129 str | 含 ${candidates.length} 个 server：${listing}`,label: || '输入序号或标识'
+web/app/mcp.js:132 str | >item.id===trimmed); if(!selected)throw new Error( || '没有找到指定的 MCP server'
+web/app/mcp.js:134 tpl$ | erver'); } mcpApplyImportedServer(selected);toast( || `已从 mcp.json 填入 ${selected.name}`
+web/app/mcp.js:141 str | =editing;$('#customMcpTitle').textContent=editing? || '修改自定义 MCP'
+web/app/mcp.js:141 str | #customMcpTitle').textContent=editing?'修改自定义 MCP': || '添加自定义 MCP'
+web/app/mcp.js:141 str | 定义 MCP';$('#customMcpSubmit').textContent=editing? || '保存修改'
+web/app/mcp.js:141 str | ;$('#customMcpSubmit').textContent=editing?'保存修改': || '添加 MCP'
+web/app/mcp.js:151 str | .py\n--stdio';addHelp(args.previousElementSibling, || '文件路径相对于上传内容根目录。例如上传根目录中有 server.py，这里填写 server.py。'
+web/app/mcp.js:152 str | dLabel=cwd.previousElementSibling;cwd.placeholder= || '通常留空；例如 packages/my-mcp'
+web/app/mcp.js:152 str | holder='通常留空；例如 packages/my-mcp';addHelp(cwdLabel, || '通常留空。上传 MCP 时相对于上传内容根目录，仅在入口程序依赖子目录作为当前目录时填写。'
+web/app/mcp.js:154 str | help';hint.dataset.mcpCwdHint='';hint.textContent= || '上传文件时默认以内容根目录启动；这里填写的目录也相对于该根目录。'
+web/app/mcp.js:155 str | document.createElement('label');label.textContent= || '额外 PATH 目录 '
+web/app/mcp.js:155 str | document.createElement('small');small.textContent= || '每行一个，相对 $PREFIX'
+web/app/mcp.js:155 str | name='pathEntries';input.rows=3;input.placeholder= || '通常留空，例如 tools/bin'
+web/app/mcp.js:155 str | div');help.className='json-help';help.textContent= || 'npm、pip、Go、Cargo、Composer、Ruby 等常见目录已由平台自动加入 PATH；只有自定义安装目录才需要填写。'
+web/app/mcp.js:158 tpl$ | div');row.className='kv-editor-row';row.innerHTML= || `<input data-kv-key placeholder="KEY" value="${escapeHTML(key)}"><input data-kv-value placeholder="VALUE" value="${escapeHTML(value)}"><button type="button" class="button ghost small" data-mcp-kv-del>删除</button>`
+web/app/mcp.js:160 tpl$ | l=$('#mcpFileSummary');if(el)el.textContent=count? || `${count} 个文件${files?.length?'待上传':'已保存'}`
+web/app/mcp.js:160 str | =count?`${count} 个文件${files?.length?'待上传':'已保存'}`: || '未上传文件'
+web/app/mcp.js:167 str | utton.disabled=true;button.textContent=wasEditing? || '保存中…'
+web/app/mcp.js:167 str | isabled=true;button.textContent=wasEditing?'保存中…': || '添加中…'
+web/app/mcp.js:174 str | {method:'PUT',body:JSON.stringify(server)});toast( || '自定义 MCP 已更新'
+web/app/mcp.js:175 str | ate.mcpScope=scope;state.mcpTab='installed';toast( || '自定义 MCP 已添加'
+web/app/mcp.js:179 str | tton.disabled=false;button.textContent=wasEditing? || '保存修改'
+web/app/mcp.js:179 str | sabled=false;button.textContent=wasEditing?'保存修改': || '添加 MCP'
+web/app/mcp.js:190 tpl$ | matchedInstalled.length); hint.innerHTML=personal? || `<b>个人 MCP</b><span>仅 ${escapeHTML(userDisplay(state.currentUser)||'当前用户')} 可见。</span>`
+web/app/mcp.js:190 tpl$ | rDisplay(state.currentUser)||'当前用户')} 可见。</span>`: || `<b>项目 MCP</b><span>添加到「${escapeHTML(project?.name||'未选择项目')}」，不会出现在其他项目中。</span>`
+web/app/mcp.js:191 str | tUser||state.currentUser.isGuest)){grid.innerHTML= || '<div class="mcp-market-empty"><b>登录后才能管理个人 MCP</b><p>项目级 MCP 仍可在当前项目中管理。</p></div>'
+web/app/mcp.js:194 tpl$ | lled,query); const cards=pagedMCP.items.map(item=> || `<article class="mcp-market-card is-installed"><div class="mcp-card-head"><span class="mcp-card-logo">${mcpMarketLogo(item)}</span><div><h3>${escapeHTML(item.name)}</h3><small>${personal?'个人专属':escapeHTML(project?.name||item.projectId)}</small></div><span class="mcp-installed-badge ${item.marketId?'is-market':'is-custom'}">${item.marketId?'市场':'自定义'}</span></div><p>${escapeHTML(item.description||'
+web/app/mcp.js:194 tpl$ | data-mcp-edit="${escapeHTML(item.id)}">修改</button> || `}<button class="button ghost small danger" type="button" data-mcp-remove="${escapeHTML(item.id)}">移除</button></div></div></article>`
+web/app/mcp.js:195 str | ).join(''); grid.innerHTML=catalog+(cards||(query? || '<div class="mcp-market-empty"><b>没有匹配的 MCP</b><p>换个关键词试试。</p></div>'
+web/app/mcp.js:195 tpl$ | ket-empty"><b>没有匹配的 MCP</b><p>换个关键词试试。</p></div>': || `<div class="mcp-market-empty"><b>当前范围还没有 MCP</b><p>点击右上角「添加 MCP」，${personal?'创建个人专属配置':'为本项目接入工具'}。</p></div>`
+web/app/mcp.js:204 str | stalledMCP(id,button){ if(!await afConfirm({title: || '移除 MCP 确认'
+web/app/mcp.js:204 str | ){ if(!await afConfirm({title:'移除 MCP 确认',message: || '移除后，引用这个 MCP 的角色将无法再调用它。确定移除？'
+web/app/mcp.js:204 str | ssage:'移除后，引用这个 MCP 的角色将无法再调用它。确定移除？',confirmText: || '确认移除'
+web/app/mcp.js:206 str | !==id);renderMCPManagement();renderAgents();toast( || 'MCP 已移除'
+web/app/assets.js:5 str | opy(type=state.assetType){ return ({ rules:{group: || 'Agent 能力'
+web/app/assets.js:5 str | ssetType){ return ({ rules:{group:'Agent 能力',page: || '能力资产'
+web/app/assets.js:5 str | return ({ rules:{group:'Agent 能力',page:'能力资产',tab: || '规则'
+web/app/assets.js:5 str | rules:{group:'Agent 能力',page:'能力资产',tab:'规则',desc: || '维护当前项目的行为约束和执行规则。'
+web/app/assets.js:5 str | e:'能力资产',tab:'规则',desc:'维护当前项目的行为约束和执行规则。',create: || '新建规则'
+web/app/assets.js:6 str | '维护当前项目的行为约束和执行规则。',create:'新建规则'}, skills:{group: || 'Agent 能力'
+web/app/assets.js:6 str | 则。',create:'新建规则'}, skills:{group:'Agent 能力',page: || '能力资产'
+web/app/assets.js:6 str | '新建规则'}, skills:{group:'Agent 能力',page:'能力资产',tab: || '技能'
+web/app/assets.js:6 str | kills:{group:'Agent 能力',page:'能力资产',tab:'技能',desc: || '维护当前项目可供角色使用的技能和附加文件。'
+web/app/assets.js:6 str | 力资产',tab:'技能',desc:'维护当前项目可供角色使用的技能和附加文件。',create: || '新建技能'
+web/app/assets.js:7 str | 角色使用的技能和附加文件。',create:'新建技能'}, dockerfiles:{group: || '运行环境'
+web/app/assets.js:7 str | 。',create:'新建技能'}, dockerfiles:{group:'运行环境',page: || '环境资产'
+web/app/assets.js:7 str | s:{group:'运行环境',page:'环境资产',tab:'Dockerfile',desc: || '维护当前项目的容器构建定义。'
+web/app/assets.js:7 str | 资产',tab:'Dockerfile',desc:'维护当前项目的容器构建定义。',create: || '新建 Dockerfile'
+web/app/assets.js:8 str | 定义。',create:'新建 Dockerfile'}, environments:{group: || '运行环境'
+web/app/assets.js:8 str | '新建 Dockerfile'}, environments:{group:'运行环境',page: || '环境资产'
+web/app/assets.js:8 str | ile'}, environments:{group:'运行环境',page:'环境资产',tab: || '安装脚本'
+web/app/assets.js:8 str | onments:{group:'运行环境',page:'环境资产',tab:'安装脚本',desc: || '维护安装到隔离执行环境中的工具与依赖。'
+web/app/assets.js:8 str | 境资产',tab:'安装脚本',desc:'维护安装到隔离执行环境中的工具与依赖。',create: || '新建安装脚本'
+web/app/assets.js:9 str | 离执行环境中的工具与依赖。',create:'新建安装脚本'}, sandboxes:{group: || '运行环境'
+web/app/assets.js:9 str | 。',create:'新建安装脚本'}, sandboxes:{group:'运行环境',page: || '环境资产'
+web/app/assets.js:9 str | 新建安装脚本'}, sandboxes:{group:'运行环境',page:'环境资产',tab: || '沙箱'
+web/app/assets.js:9 str | sandboxes:{group:'运行环境',page:'环境资产',tab:'沙箱',desc: || '维护当前项目的运行隔离方式及环境依赖。'
+web/app/assets.js:9 str | '环境资产',tab:'沙箱',desc:'维护当前项目的运行隔离方式及环境依赖。',create: || '新建沙箱'
+web/app/assets.js:10 str | 前项目的运行隔离方式及环境依赖。',create:'新建沙箱'} })[type]||{group: || '运行环境'
+web/app/assets.js:10 str | 境依赖。',create:'新建沙箱'} })[type]||{group:'运行环境',page: || '环境资产'
+web/app/assets.js:10 str | ||{group:'运行环境',page:'环境资产',tab:'Dockerfile',desc: || '维护当前项目的容器构建定义。'
+web/app/assets.js:10 str | 资产',tab:'Dockerfile',desc:'维护当前项目的容器构建定义。',create: || '新建 Dockerfile'
+web/app/assets.js:12 str | ption(type=state.assetType){return type==='rules'? || '查看其他项目共享的规则；共享规则只读，可直接绑定到本项目角色。'
+web/app/assets.js:12 str | '查看其他项目共享的规则；共享规则只读，可直接绑定到本项目角色。':type==='skills'? || '查看其他项目共享的技能；共享技能只读，会自动装入平台上所有对话和定时任务，也可绑定到本项目角色。'
+web/app/assets.js:12 str | 查看其他项目共享的技能；共享技能只读，会自动装入平台上所有对话和定时任务，也可绑定到本项目角色。': || '查看其他项目共享的环境资产；共享资产只读，可直接用于本项目。'
+web/app/assets.js:20 str | find(p=>p.id===a?.projectId)?.name||a?.projectId|| || '平台'
+web/app/assets.js:23 tpl$ | atusHTML(a){ if(!catalogOwned(a.projectId))return  || `<span class="asset-status is-from"><i></i>来自 ${escapeHTML(assetProjectName(a))}</span>`
+web/app/assets.js:24 tpl$ | {escapeHTML(assetProjectName(a))}</span>`; return  || `<span class="asset-status ${a.shared?'is-on':''}"><i></i>${a.shared?'已共享':'未共享'}</span>`
+web/app/assets.js:28 tpl$ | setType==='rules'){meta.push(item('priority-bolt', || `优先级 ${a.priority||0}`
+web/app/assets.js:28 tpl$ | kflowIds||[]).length;meta.push(item('globe',bound? || `全局 · ${bound} 个 SOP`
+web/app/assets.js:28 str | eta.push(item('globe',bound?`全局 · ${bound} 个 SOP`: || '全局'
+web/app/assets.js:30 tpl$ | state.assetType==='skills'){ meta.push(item('doc', || `${Object.keys(a.files||{}).length+(a.fileRefs||[]).length} 个文件`
+web/app/assets.js:32 tpl$ | atest(src);meta.push(latest&&latest!==src.version? || `<span class="hui-badge" data-tone="warn" data-size="sm"><span class="hui-lamp"><i></i></span><span class="hui-badge-label">SkillHub v${escapeHTML(src.version)} · 可更新</span></span>`
+web/app/assets.js:34 tpl$ | te.assetType==='dockerfiles')meta.push(item('doc', || `${(a.content||'').split('\n').length} 行`
+web/app/assets.js:35 tpl$ | etType==='environments')meta.push(item('variable', || `${Object.keys(a.variables||{}).length} 个变量`
+web/app/assets.js:38 tpl$ | a).length; meta.push(item(assetRefIconName(),refs? || `${refs} 个${assetRefKindLabel()}引用`
+web/app/assets.js:38 str | onName(),refs?`${refs} 个${assetRefKindLabel()}引用`: || '未被引用'
+web/app/assets.js:42 str | only=!catalogOwned(a.projectId);const go=readonly? || '查看'
+web/app/assets.js:42 str | !catalogOwned(a.projectId);const go=readonly?'查看': || '编辑'
+web/app/assets.js:43 tpl$ | (a.projectId);const go=readonly?'查看':'编辑'; return  || `<article class="asset-card" role="link" tabindex="0" data-asset-id="${escapeHTML(a.id)}" aria-label="${go}${escapeHTML(assetKindLabel())}「${escapeHTML(a.name||a.id)}」"><div class="asset-card-top"><span class="asset-tile">${huiIcon(assetIconName())}</span><div class="asset-card-name"><h3>${escapeHTML(a.name||a.id)}</h3><code class="asset-mono">${escapeHTML(a.id)}</code></div></div><p class="asset-
+web/app/assets.js:47 tpl$ | (); if(String(state.assetQuery||'').trim())return  || `<div class="asset-empty"><b>没有匹配「${escapeHTML(state.assetQuery.trim())}」的${escapeHTML(kind)}</b><p>换个关键词试试。</p></div>`
+web/app/assets.js:48 str | hint=['rules','skills'].includes(state.assetType)? || '请在资产所属项目中共享，或共享一个引用它的角色。'
+web/app/assets.js:48 str | ludes(state.assetType)?'请在资产所属项目中共享，或共享一个引用它的角色。': || '请在资产所属项目中共享；共享 SOP 时也会自动共享其环境依赖。'
+web/app/assets.js:48 tpl$ | 用它的角色。':'请在资产所属项目中共享；共享 SOP 时也会自动共享其环境依赖。';return  || `<div class="asset-empty"><b>其他项目还没有共享${escapeHTML(kind)}</b><p>${hint}</p></div>`
+web/app/assets.js:49 tpl$ | scapeHTML(kind)}</b><p>${hint}</p></div>`} return  || `<div class="asset-empty"><b>当前项目还没有${/^[A-Za-z]/.test(kind)?' ':''}${escapeHTML(kind)}</b><p>${assetEmptyHint()}</p><button type="button" class="button primary" data-empty-new>${huiIcon('plus')}${escapeHTML(copy.create)}</button></div>`
+web/app/assets.js:55 tpl$ | t count=$('#assetCount');if(count)count.innerHTML= || `${scope==='shared'?'共享':'本项目'}${escapeHTML(assetKindLabel())}<b>${items.length}</b>`
+web/app/assets.js:67 str | tPageDescription').textContent=scope==='skillhub'? || '从 SkillHub 搜索公开技能，查看质量评测与安全认证后安装到本项目。'
+web/app/assets.js:100 tpl$ | ed(a.projectId); const badge=creating?'':readonly? || `<span class="asset-badge is-from">来自 ${escapeHTML(assetProjectName(a))}</span>`
+web/app/assets.js:100 tpl$ | om">来自 ${escapeHTML(assetProjectName(a))}</span>`: || `<span class="asset-badge ${a.shared?'is-on':''}">${a.shared?'已共享':'未共享'}</span>`
+web/app/assets.js:101 tpl$ | shared?'已共享':'未共享'}</span>`; const title=creating? || `新建${kind}`
+web/app/assets.js:102 tpl$ | g?`新建${kind}`:(a.name||a.id); const desc=creating? || `填写标识和名称后创建${state.assetType==='skills'?'，创建后即可上传文件':''}。`
+web/app/assets.js:102 str | ype==='skills'?'，创建后即可上传文件':''}。`:(a.description|| || '暂无说明'
+web/app/assets.js:104 tpl$ | iption||'暂无说明'); let actions; if(creating)actions= || `<button type="button" class="button" data-asset-cancel>取消</button><button type="submit" form="assetForm" class="button primary" data-asset-save>${huiIcon('plus')}创建${escapeHTML(kind)}</button>`
+web/app/assets.js:105 tpl$ | peHTML(kind)}</button>`; else if(readonly)actions= || `<span class="asset-badge is-ro">${huiIcon('lock')}只读 · 可直接在本项目使用</span>`
+web/app/assets.js:108 tpl$ | lse{ const blocked=assetDeleteBlocked(a); actions= || `<span class="asset-dirty" data-asset-dirty ${dirty?'':'hidden'}><i></i>未保存</span>`
+web/app/assets.js:109 tpl$ | et-dirty ${dirty?'':'hidden'}><i></i>未保存</span>`+  || `<button type="button" class="button" data-asset-share>${huiIcon(a.shared?'close':'arrow-up')}${a.shared?'取消共享':'共享给其他项目'}</button>`
+web/app/assets.js:110 tpl$ | rrow-up')}${a.shared?'取消共享':'共享给其他项目'}</button>`+  || `<div class="asset-more"><button type="button" class="button hui-icon-button" id="assetMoreBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="assetMoreMenu" aria-label="更多操作" title="更多操作">${huiIcon('more-horizontal')}</button>`
+web/app/assets.js:111 tpl$ | e="更多操作">${huiIcon('more-horizontal')}</button>`+  || `<div id="assetMoreMenu" class="hui-menu asset-menu" role="menu" inert><button type="button" role="menuitem" class="hui-menu-item is-danger" data-asset-delete ${blocked?'disabled aria-disabled="true"':''}>${huiIcon('trash')}<span class="hui-menu-label">删除${escapeHTML(kind)}</span></button>${blocked?`
+web/app/assets.js:112 tpl$ | son>${escapeHTML(blocked)}</p>`:''}</div></div>`+  || `<button type="submit" form="assetForm" class="button primary" data-asset-save>${huiIcon('save')}保存修改</button>`
+web/app/assets.js:114 tpl$ | t-save>${huiIcon('save')}保存修改</button>`; } return  || `<div class="asset-dtitle"><button type="button" class="button hui-icon-button asset-back" data-asset-back aria-label="返回${escapeHTML(copy.page)}" title="返回${escapeHTML(copy.page)}">${huiIcon('arrow-left')}</button><div class="asset-dtitle-text"><h1><span class="asset-dname">${escapeHTML(title)}</span>${badge}</h1><p>${escapeHTML(desc)}</p></div></div><div class="asset-acts">${actions}</div>`
+web/app/assets.js:155 tpl$ | eferenceNames(a),kind=assetRefKindLabel(); return  || `<h4>被引用<span class="asset-side-count">${refs.length}</span></h4><ul class="asset-refs">${refs.length?refs.map(name=>`
+web/app/assets.js:163 tpl$ | ime())?d.toLocaleDateString('zh-CN'):'—'}; return  || `<dt>来源</dt><dd>${homepage?`
+web/app/assets.js:163 tpl$ | rc.slug)}</a>`:`SkillHub · ${escapeHTML(src.slug)} || `}</dd><dt>版本</dt><dd>v${escapeHTML(src.version)}${latest&&latest!==src.version?`
+web/app/assets.js:163 tpl$ | latest!==src.version?` · 最新 v${escapeHTML(latest)} || `:''}</dd><dt>安装于</dt><dd>${escapeHTML(date(src.installedAt))}</dd>${src.updatedAt&&src.updatedAt!==src.installedAt?`
+web/app/assets.js:168 tpl$ | lLatest(src); return latest&&latest!==src.version? || `<button type="button" class="button primary asset-source-btn" data-skillhub-source-update>${huiIcon('refresh')}更新到 v${escapeHTML(latest)}</button>`
+web/app/assets.js:168 tpl$ | n('refresh')}更新到 v${escapeHTML(latest)}</button>`: || `<button type="button" class="button hui-btn-soft asset-source-btn" data-skillhub-source-check>${huiIcon('refresh')}检查更新</button>`
+web/app/assets.js:172 tpl$ | const readonly=!catalogOwned(a.projectId); return  || `<h4>概览</h4><dl class="asset-kv"><dt>归属</dt><dd>${readonly?escapeHTML(assetProjectName(a)):'本项目'}</dd><dt>共享</dt><dd>${readonly?'其他项目共享':a.shared?'已共享':'未共享'}</dd>${assetIsBuiltin(a)?'<dt>类型</dt><dd>内置</dd>':''}${assetSkillSourceRowsHTML(a)}</dl>${assetSkillSourceActionHTML(a)}`
+web/app/assets.js:202 str | e()))return true; const ok=await afConfirm({title: || '未保存的修改'
+web/app/assets.js:202 tpl$ |  const ok=await afConfirm({title:'未保存的修改',message: || `当前${assetKindLabel()}有未保存修改，离开将放弃这些修改。继续？`
+web/app/assets.js:202 str | ssetKindLabel()}有未保存修改，离开将放弃这些修改。继续？`,confirmText: || '放弃并离开'
+web/app/assets.js:242 str | etTop(); return true; } const SHARED_SKILL_NOTICE= || '共享后，这个技能会自动装入平台上所有用户的对话和定时任务（包括其他项目和无项目的对话），模型可以直接调用。继续？'
+web/app/assets.js:245 str | !item||!catalogOwned(item.projectId))return toast( || '只能共享本项目的资产'
+web/app/assets.js:246 str | te.assetType==='skills'&&!(await afConfirm({title: || '共享技能'
+web/app/assets.js:246 str | le:'共享技能',message:SHARED_SKILL_NOTICE,confirmText: || '共享'
+web/app/assets.js:254 str | ); toast(saved.shared?(state.assetType==='skills'? || '已共享，所有对话和定时任务会自动装入'
+web/app/assets.js:254 str | ?(state.assetType==='skills'?'已共享，所有对话和定时任务会自动装入': || '已共享，其他项目可绑定'
+web/app/assets.js:254 str | pe==='skills'?'已共享，所有对话和定时任务会自动装入':'已共享，其他项目可绑定'): || '已取消共享'
+web/app/assets.js:257 str | sage)} } function assetEmptyHint(){return ({rules: || '规则是写给 Agent 的行为约束，例如编码规范、禁止事项。建好后在「角色定义」里绑定到角色。'
+web/app/assets.js:257 str | Agent 的行为约束，例如编码规范、禁止事项。建好后在「角色定义」里绑定到角色。',skills: || '技能是 Agent 可按需加载的说明和附加文件，例如某个框架的操作手册。建好后在「角色定义」里绑定到角色。'
+web/app/assets.js:257 str | 明和附加文件，例如某个框架的操作手册。建好后在「角色定义」里绑定到角色。',dockerfiles: || 'Dockerfile 定义沙箱容器的镜像。建好后在「沙箱管理」里选用；也可以直接用「共享」里的现成配置。'
+web/app/assets.js:257 str | 的镜像。建好后在「沙箱管理」里选用；也可以直接用「共享」里的现成配置。',environments: || '安装脚本在沙箱初始化时把工具装进隔离环境，例如指定版本的 Go、PHP、Node。建好后在「沙箱管理」里选用。'
+web/app/assets.js:257 str | 离环境，例如指定版本的 Go、PHP、Node。建好后在「沙箱管理」里选用。',sandboxes: || '沙箱决定 SOP 节点在什么隔离环境里执行，由 Dockerfile 和安装脚本组合而成。建好后在流程设置里选用；也可以直接用「共享」里的现成配置。'
+web/app/assets.js:258 str | pe]||''} function assetKindLabel(){return ({rules: || '规则'
+web/app/assets.js:258 str | ction assetKindLabel(){return ({rules:'规则',skills: || '技能'
+web/app/assets.js:258 str | skills:'技能',dockerfiles:'Dockerfile',environments: || '环境安装脚本'
+web/app/assets.js:258 str | iles:'Dockerfile',environments:'环境安装脚本',sandboxes: || '沙箱'
+web/app/assets.js:258 str | ments:'环境安装脚本',sandboxes:'沙箱'})[state.assetType]|| || '资产'
+web/app/assets.js:259 str | '资产'} function assetRefKindLabel(){return ({rules: || '角色'
+web/app/assets.js:259 str | on assetRefKindLabel(){return ({rules:'角色',skills: || '角色'
+web/app/assets.js:259 str | bel(){return ({rules:'角色',skills:'角色',dockerfiles: || '沙箱'
+web/app/assets.js:259 str | es:'角色',skills:'角色',dockerfiles:'沙箱',environments: || '沙箱'
+web/app/assets.js:259 str | '角色',dockerfiles:'沙箱',environments:'沙箱',sandboxes: || '流程'
+web/app/assets.js:259 str | ironments:'沙箱',sandboxes:'流程'})[state.assetType]|| || '引用'
+web/app/assets.js:270 str |  function assetDeleteBlocked(a){ if(!a?.id)return  || '无法删除'
+web/app/assets.js:271 tpl$ | &(a.id==='local'||a.id==='generic-docker'))return  || `内置沙箱 ${a.id} 不能删除`
+web/app/assets.js:272 str | ==='dockerfiles'&&a.id==='generic-backend')return  || '内置 Dockerfile generic-backend 不能删除'
+web/app/assets.js:273 tpl$ | kerfile generic-backend 不能删除'; if(a.shared)return  || `共享状态的${assetKindLabel()}不能删除，请先取消共享`
+web/app/assets.js:275 tpl$ | efs=assetReferenceNames(a); if(refs.length)return  || `${assetKindLabel()}仍被 ${refs.length} 个${assetRefKindLabel()}引用（${refs.join('、')}），请先解除引用`
+web/app/assets.js:280 str | e]||[]).find(x=>x.id===id); if(!item)return toast( || '资产不存在或已删除'
+web/app/assets.js:281 str | '); if(!catalogOwned(item.projectId))return toast( || '只能删除本项目的资产'
+web/app/assets.js:285 tpl$ | abel=assetKindLabel(); if(!await afConfirm({title: || `删除${label}确认`
+web/app/assets.js:285 tpl$ | if(!await afConfirm({title:`删除${label}确认`,message: || `确认删除${label}「${item.name}」？此操作不可恢复。`
+web/app/assets.js:285 str | `确认删除${label}「${item.name}」？此操作不可恢复。`,confirmText: || '确认删除'
+web/app/assets.js:291 tpl$ | tDetail({force:true}); else renderAssets(); toast( || `${label}已删除`
+web/app/assets.js:292 str |  toast(`${label}已删除`); }catch(e){toast(e.message|| || '删除失败'
+web/app/assets.js:295 tpl$ | on ruleGlobalFields(a){const on=!!a.global;return  || `<div class="rule-global-block"><label class="rule-global-row"><span><b>作为全局规则</b><small>开启后选择要生效的 SOP。该 SOP 的每个节点执行时都会带上这条规则。</small></span><input name="global" type="checkbox" class="rule-global-input" role="switch" ${on?'checked':''}></label><div id="ruleSOPPickerWrap" class="rule-global-sops" ${on?'':'hidden'}><label>应用到 SOP</label><div id="ruleSOPPicker" class="repo-picker"></div><div class="
+web/app/assets.js:299 tpl$ | nst nodes=sop?.nodes?.length||0;const label=nodes? || `${name} · ${nodes} 个节点`
+web/app/assets.js:299 tpl$ |  label=nodes?`${name} · ${nodes} 个节点`:name;return  || `<button type="button" class="repo-picker-tag" data-remove-rule-sop="${escapeHTML(id)}" title="点击移除">${escapeHTML(label)}<span aria-hidden="true">×</span></button>`
+web/app/assets.js:299 str | option>`).join('');const placeholder=!sops.length? || '暂无可选 SOP'
+web/app/assets.js:299 str | eholder=!sops.length?'暂无可选 SOP':(!leftover.length? || '已全部选择'
+web/app/assets.js:299 str | !sops.length?'暂无可选 SOP':(!leftover.length?'已全部选择': || '＋ 添加 SOP…'
+web/app/assets.js:301 tpl | le(x.projectId,x.shared));if(!items.length)return  || `<option value="">请先创建 Dockerfile</option>`
+web/app/assets.js:301 tpl | <option value="">请先创建 Dockerfile</option>`;return  || `<option value="">选择 Dockerfile</option>`
+web/app/assets.js:301 tpl$ | ion value="">选择 Dockerfile</option>`+items.map(x=> || `<option value="${escapeHTML(x.id)}" ${x.id===selected?'selected':''}>${escapeHTML(x.name||x.id)}${catalogForeign(x.projectId)?' · 共享':''}</option>`
+web/app/assets.js:302 tpl | r(x=>catalogVisible(x.projectId,x.shared));return  || `<option value="">不选择（可用 workspace 的 agentflow-environment）</option>`
+web/app/assets.js:302 tpl$ | e 的 agentflow-environment）</option>`+items.map(x=> || `<option value="${escapeHTML(x.id)}" ${x.id===selected?'selected':''}>${escapeHTML(x.name||x.id)}${catalogForeign(x.projectId)?' · 共享':''}</option>`
+web/app/assets.js:306 str | ng?{id:existing.id,existing,created:false}:{error: || '选中的资产已不存在，请刷新后重试'
+web/app/assets.js:306 str | ).some(item=>item.id===requestedID))return {error: || '该标识已存在，请换一个标识，或回到列表打开已有资产修改'
+web/app/assets.js:307 str | abs(type=state.assetType){return ({rules:[['edit', || '编辑'
+web/app/assets.js:307 str | setType){return ({rules:[['edit','编辑'],['preview', || '预览'
+web/app/assets.js:307 str | [['edit','编辑'],['preview','预览']],skills:[['files', || '文件'
+web/app/assets.js:307 str | ]],dockerfiles:[['content','Dockerfile'],['files', || '构建上下文'
+web/app/assets.js:307 str | ']],environments:[['script','install.sh'],['vars', || '环境变量'
+web/app/assets.js:307 str | 'vars','环境变量'],['path','PATH']],sandboxes:[['env', || '环境变量'
+web/app/assets.js:307 str | H']],sandboxes:[['env','环境变量']]})[type]||[['edit', || '编辑'
+web/app/assets.js:308 str | ssetPaneHint(type=state.assetType){return ({rules: || '支持 Markdown'
+web/app/assets.js:308 str | te.assetType){return ({rules:'支持 Markdown',skills: || '每次上传都会完整替换现有文件'
+web/app/assets.js:308 str | '支持 Markdown',skills:'每次上传都会完整替换现有文件',dockerfiles: || '沙箱初始化时用库里这份 docker build'
+web/app/assets.js:308 str | ckerfiles:'沙箱初始化时用库里这份 docker build',environments: || '脚本把工具装进 $PREFIX'
+web/app/assets.js:308 str | r build',environments:'脚本把工具装进 $PREFIX',sandboxes: || '驱动与执行环境在右侧设置，不要在这里保存凭证'
+web/app/assets.js:311 tpl$ | ; if(state.assetType==='rules')return pane('edit', || `<textarea name="content" class="asset-editor" rows="18" placeholder="写入必须遵守的行为和约束">${escapeHTML(a.content||'')}</textarea>`
+web/app/assets.js:313 tpl | Type==='skills'){ if(creating)return pane('files', || `<div class="asset-empty is-inline"><b>先创建技能，再上传文件</b><p>支持文件夹、.zip 压缩包或单独的 SKILL.md。</p></div>`
+web/app/assets.js:316 tpl$ | scapeHTML(src.version)}，只读；如需新版本请点更新。</span></div> || `:''}
+    <div class="skill-upload-actions"${locked?' hidden':''}>
+      <input type="file" id="skillFolderPick" webkitdirectory multiple style="display:none">
+      <input type="file" id="skillZipPick" accept=".zip,application/zip,application/x-zip-compressed" style="display:none">
+      <input type="file" id="skillMdPick" accept=".md,.markdown,text/markdown" style="display:none">
+      <but
+web/app/assets.js:330 tpl$ | e.assetType==='dockerfiles')return pane('content', || `<textarea name="content" class="asset-editor" rows="18" placeholder="FROM node:22-bookworm-slim">${escapeHTML(a.content||'')}</textarea><div class="json-help">正文和附加文件保存在这条 Dockerfile 资产里，写入数据库，和 <code>install.sh</code> 一样。不要指向仓库目录或现成镜像名。沙箱初始化时用库里这份 <code>docker build</code> 出一次性镜像。</div>`
+web/app/assets.js:330 tpl$ | >docker build</code> 出一次性镜像。</div>`)+pane('files', || `<label class="asset-field-label">构建上下文文件 JSON</label><textarea name="files" class="asset-editor is-short" rows="8" placeholder='{"packages.txt":"git\\ncurl"}'>${escapeHTML(JSON.stringify(a.files||{},null,2))}</textarea><div class="json-help">键是构建上下文里的相对路径，值是文件内容；与 Dockerfile 一起保存。</div>`
+web/app/assets.js:331 tpl$ | e.assetType==='environments')return pane('script', || `<textarea name="installScript" class="asset-editor" rows="18" placeholder="#!/bin/sh&#10;set -e&#10;mkdir -p &quot;$PREFIX/bin&quot;&#10;curl -fsSL https://mirror.example/php.tgz | tar -xz -C &quot;$PREFIX&quot;">${escapeHTML(a.installScript||'')}</textarea><div class="json-help">脚本保存在环境资产里。Studio 保存即写库；下次沙箱初始化会按库里这份执行，把工具装进 <code>$PREFIX</code>。不要往宿主机写。脚本内容变化后会重新安装。</div>`
+web/app/assets.js:331 tpl$ | </code>。不要往宿主机写。脚本内容变化后会重新安装。</div>`)+pane('vars', || `<label class="asset-field-label">环境变量 JSON</label><textarea name="variables" class="asset-editor is-short" rows="8" placeholder='{"PHP_VERSION":"7.4.33"}'>${escapeHTML(JSON.stringify(a.variables||{},null,2))}</textarea>`
+web/app/assets.js:331 tpl$ | .variables||{},null,2))}</textarea>`)+pane('path', || `<label class="asset-field-label">PATH 条目 <small>相对 $PREFIX，每行一个，默认 bin</small></label><textarea name="pathEntries" class="asset-editor is-short" rows="6" placeholder="bin">${escapeHTML((a.pathEntries||[]).join('\n'))}</textarea>`
+web/app/assets.js:332 tpl$ | f(state.assetType==='sandboxes')return pane('env', || `<label class="asset-field-label">环境变量 JSON</label><textarea name="environment" class="asset-editor is-short" rows="10" placeholder='{"NAME":"value"}'>${escapeHTML(JSON.stringify(a.environment||{},null,2))}</textarea><div class="json-help">叠加到沙箱基础环境并随资产持久化；不要在这里保存凭证。平台凭证、HOME/TMPDIR 和遥测变量拥有更高优先级。</div>`
+web/app/assets.js:337 tpl$ | creating}){ const kind=assetKindLabel(); let html= || `<label class="asset-field-label" for="assetFieldName">名称</label><input id="assetFieldName" name="name" class="asset-input" value="${escapeHTML(a.name||'')}" required placeholder="给${escapeHTML(kind)}起个名字"><label class="asset-field-label" for="assetFieldId">标识</label><input id="assetFieldId" name="id" class="asset-input is-mono" value="${escapeHTML(a.id||'')}" required ${creating?'placeholder="如 l
+web/app/assets.js:338 tpl$ | r="一句话说明用途">`; if(state.assetType==='rules')html+= || `<label class="asset-field-label" for="assetFieldPriority">优先级</label><input id="assetFieldPriority" name="priority" class="asset-input" type="number" value="${a.priority||100}"><div class="asset-field-hint">数值越大越先注入。</div>${ruleGlobalFields(a)}`
+web/app/assets.js:339 tpl$ | elds(a)}`; if(state.assetType==='sandboxes')html+= || `<label class="asset-field-label">隔离方式</label><select name="driver" class="asset-select" aria-label="隔离方式"><option value="local" ${sandboxDriverOption(a.driver)==='local'?'selected':''}>local（本机直接执行）</option><option value="native" ${sandboxDriverOption(a.driver)==='native'?'selected':''}>native（系统轻量隔离）</option><option value="docker" ${sandboxDriverOption(a.driver)==='docker'?'selected':''}>docker（
+web/app/assets.js:353 tpl$ | ; } function assetAsideHTML(a,{creating}){ return  || `<section class="asset-side-card"><h4>基本信息</h4>${assetBasicFieldsHTML(a,{creating})}</section>${creating?'':`
+web/app/assets.js:361 str | t)host.innerHTML=text.trim()?renderMarkdown(text): || '<p class="asset-md-empty">还没有内容</p>'
+web/app/assets.js:369 tpl$ | iIcon('save')}保存修改`}</button></div>`; f.innerHTML= || `<section class="asset-panel asset-main"><div class="asset-panel-head"><div class="asset-pane-tabs" role="tablist" aria-label="${escapeHTML(kind)}内容">${tabs.map(([k,label])=>`
+web/app/assets.js:388 tpl$ | total=refs.reduce((s,r)=>s+(r.size||0),0); return  || `<span class="chip">${refs.length} 个文件 · ${fmtBytes(total)}</span>`
+web/app/assets.js:418 str | const refs=a.fileRefs||[]; if(!refs.length)return  || '<p class="empty-inline">还没有文件。选择文件夹或 zip 后自动上传。</p>'
+web/app/assets.js:456 tpl$ | anPreview=skillFilePreviewable(r.path); html.push( || `<div class="skill-file-row" style="padding-left:${depth*14+18}px" title="${escapeHTML(r.path)}"><span class="skill-file-icon">${skillFileIcon(r.path)}</span><code class="skill-file-path">${escapeHTML(name)}</code><span class="chip">${fmtBytes(r.size)}</span>${(r.mode&0o111)?'<span class="chip">可执行</span>':''}<button type="button" class="skill-file-preview" data-skill-file-preview="${escapeHTML(r.
+web/app/assets.js:456 str | data-skill-file-del="${escapeHTML(r.path)}" title= || "删除"
+web/app/assets.js:478 str | put)input.value=''; if(!files.length)return toast( || '没有读取到任何文件，请重新选择'
+web/app/assets.js:480 str | ; if(state.selectedAsset==='__new__')return toast( || '先保存技能，再上传文件'
+web/app/assets.js:481 str | 保存技能，再上传文件'); if(skillWriteBlocked())return toast( || '共享资产只读'
+web/app/assets.js:489 str | t ctrl=new AbortController(); const cancelBtnHTML= || '<button type="button" class="skill-upload-cancel">取消</button>'
+web/app/assets.js:491 str | )b.onclick=()=>{cancelled=true;ctrl.abort();toast( || '已取消上传'
+web/app/assets.js:503 tpl$ | tate.data.skills.push(data); setSkillUploadStatus( || `<div class="skill-upload-ok">✓ 已替换为 ${files.length} 个文件 · ${totalLabel}（${new Date().toLocaleTimeString()}）</div>`
+web/app/assets.js:505 tpl$ | /div>`); renderAssets();renderProperties(); toast( || `已替换为 ${files.length} 个文件`
+web/app/assets.js:508 tpl$ | ); }; const showFail=err=>{ setSkillUploadStatus( || `<div class="skill-upload-err">✕ ${escapeHTML(err.message)}。现有文件未改动。</div>`
+web/app/assets.js:516 tpl$ | const queue=files.map((_,idx)=>idx); setStatusRow( || `正在读取 0/${files.length} 个文件`
+web/app/assets.js:533 tpl$ | message==='__read_timeout__'){ readErr=new Error( || `读取文件超时：${rel}。浏览器读取文件内容被系统/安全软件阻断，将尝试流式直传。`
+web/app/assets.js:535 tpl$ | 阻断，将尝试流式直传。`); }else{ readErr=new Error( || `读取文件失败：${rel}（${err.message}）`
+web/app/assets.js:542 tpl$ |  done++;readBytes+=buf.byteLength; setStatusRow( || `正在读取 ${done}/${files.length} 个文件 · 已读取 ${fmtBytes(readBytes)}`
+web/app/assets.js:546 tpl$ | orkers)} catch(err){if(!readErr)readErr=new Error( || `读取过程异常：${err.message}`
+web/app/assets.js:548 str | r.message}`)} if(cancelled){ setSkillUploadStatus( || '<div class="skill-upload-err">已取消上传，现有文件未改动。</div>'
+web/app/assets.js:559 tpl$ | y:fd,signal:ctrl.signal}); }else{ setStatusRow( || `读取受阻，正在尝试流式直传 ${files.length} 个文件…`
+web/app/assets.js:568 tpl$ | .min(88,fakePct+Math.random()*10+4); setStatusRow( || `上传中 ${Math.round(fakePct)}% · ${files.length} 个文件 · ${totalLabel}`
+web/app/assets.js:572 str | tTimeout(()=>{ ctrl.abort(); setSkillUploadStatus( || '<div class="skill-upload-err">✕ 上传超过 15 秒未完成，已中止。浏览器读取/发送文件被环境阻断（常见于安全管控软件）。现有文件未改动。</div>'
+web/app/assets.js:584 str | 'AbortError'){ if(!cancelled)setSkillUploadStatus( || '<div class="skill-upload-err">✕ 上传超过 15 秒未完成，已中止。浏览器读取/发送文件被环境阻断（常见于安全管控软件）。现有文件未改动。</div>'
+web/app/assets.js:585 str | 管控软件）。现有文件未改动。</div>'); else setSkillUploadStatus( || '<div class="skill-upload-err">已取消上传，现有文件未改动。</div>'
+web/app/assets.js:600 str | put)input.value=''; if(!files.length)return toast( || '没有读取到任何文件，请重新选择'
+web/app/assets.js:603 str | '.md')&&!lower.endsWith('.markdown'))return toast( || '请选择 SKILL.md 或 .md 文件'
+web/app/assets.js:604 str | d 或 .md 文件'); if(file.size>1024*1024)return toast( || 'SKILL.md 超过 1MB 限制'
+web/app/assets.js:606 str | electedAsset; if(!id||id==='__new__')return toast( || '先保存技能，再上传文件'
+web/app/assets.js:607 str | 保存技能，再上传文件'); if(skillWriteBlocked())return toast( || '共享资产只读'
+web/app/assets.js:611 str | efs||[]).length; const ok=await afConfirm({ title: || '覆盖性更改'
+web/app/assets.js:613 tpl$ |  afConfirm({ title:'覆盖性更改', message:extra ? || `这是覆盖性更改：上传后该技能将只保留 SKILL.md，现有的 ${extra} 个文件（含 scripts、文档和其他资源）全部删除。此操作不可撤销。`
+web/app/assets.js:614 str | 有的 ${extra} 个文件（含 scripts、文档和其他资源）全部删除。此操作不可撤销。` : || '这是覆盖性更改：上传后该技能将只保留这一份 SKILL.md。此操作不可撤销。'
+web/app/assets.js:615 str | 性更改：上传后该技能将只保留这一份 SKILL.md。此操作不可撤销。', confirmText: || '确认覆盖'
+web/app/assets.js:616 str | KILL.md。此操作不可撤销。', confirmText:'确认覆盖', cancelText: || '取消'
+web/app/assets.js:621 str | n; skillUploadButtons(true); setSkillUploadStatus( || '<div class="skill-upload-progress"><span>正在覆盖为仅 SKILL.md…</span><div class="skill-upload-bar indeterminate"><i></i></div><b class="skill-upload-pct">···</b></div>'
+web/app/assets.js:631 tpl$ | tate.data.skills.push(data); setSkillUploadStatus( || `<div class="skill-upload-ok">✓ 已覆盖为仅 SKILL.md · ${fmtBytes(file.size)}（${new Date().toLocaleTimeString()}）</div>`
+web/app/assets.js:633 str | /div>`); renderAssets();renderProperties(); toast( || '已覆盖为仅 SKILL.md'
+web/app/assets.js:635 tpl$ | KILL.md','ok'); }catch(err){ setSkillUploadStatus( || `<div class="skill-upload-err">✕ ${escapeHTML(err.message)}。现有文件未改动。</div>`
+web/app/assets.js:643 str | ath){ if(!path)return; if(!await afConfirm({title: || '删除文件'
+web/app/assets.js:643 tpl$ | return; if(!await afConfirm({title:'删除文件',message: || `确定删除 ${path} 吗？此操作不可恢复。`
+web/app/assets.js:643 str | 文件',message:`确定删除 ${path} 吗？此操作不可恢复。`,confirmText: || '确认删除'
+web/app/assets.js:652 str | i]=data; renderAssets();renderProperties(); toast( || '文件已删除'
+web/app/assets.js:656 str | llFilePreview(skill, path){ if(!path)return toast( || '无法预览：缺少文件路径'
+web/app/assets.js:657 str | oast('无法预览：缺少文件路径','err'); if(!skill)return toast( || '无法预览：未选中技能'
+web/app/assets.js:661 str | host=$('#artifactPreview'); if(!host)return toast( || '预览窗口不可用'
+web/app/assets.js:662 str | ost)return toast('预览窗口不可用','err'); host.innerHTML= || '<div class="artifact-loading">正在加载文件…</div>'
+web/app/assets.js:681 tpl$ | ghtCode(text, lang)}</pre></div>`; host.innerHTML= || `<div class="artifact-preview-head"><div class="artifact-preview-head-left"><span class="artifact-preview-icon">${skillFileIcon(path)}</span><div class="artifact-preview-titles"><h2>${escapeHTML(path.split('/').pop())}</h2><div class="artifact-preview-sub"><span>${escapeHTML(path)}</span></div></div></div><div class="artifact-preview-head-actions"><a class="button ghost small" href="${url}" downlo
+web/app/assets.js:686 tpl$ |  } renderModal(); }catch(err){ host.innerHTML= || `<div class="artifact-loading">预览失败：${escapeHTML(err.message)}</div>`
+web/app/assets.js:690 str | &&catalogForeign(existing.projectId))return toast( || '共享资产只读'
+web/app/assets.js:690 str | g?.shared};if(!value.id||!value.name)return toast( || '标识和名称不能为空'
+web/app/assets.js:699 str | wMeta();renderProperties();toast(identity.created? || '资产已创建'
+web/app/assets.js:699 str | renderProperties();toast(identity.created?'资产已创建': || '资产修改已保存'
+web/app/runners.js:1 str | d':''}>${escapeHTML(w.name)}</option>`).join('')|| || '<option value="">暂无可运行 SOP</option>'
+web/app/runners.js:33 str | nner){ if(!(Number(runner?.ownerUserId)>0))return  || '项目共享执行机器'
+web/app/runners.js:35 tpl$ | limit=Number(runner?.runLimit)||0; return limit>0? || `个人机器 · 最多同时运行 ${limit} 条 SOP（不受项目 10 条限额）`
+web/app/runners.js:35 str | mit>0?`个人机器 · 最多同时运行 ${limit} 条 SOP（不受项目 10 条限额）`: || '个人机器 · 不限同时运行数（不受项目 10 条限额）'
+web/app/runners.js:40 str | onst limit=Number(runner?.runLimit)||0; const tip= || '按顶层 SOP 计数，超出排队；失败、暂停、待确认也占用名额。留空表示不限，不受项目 10 条限额约束。'
+web/app/runners.js:41 tpl$ | 出排队；失败、暂停、待确认也占用名额。留空表示不限，不受项目 10 条限额约束。'; return  || `<div class="runner-run-limit"><label for="runLimit-${escapeHTML(runner.id)}">最多同时运行<input id="runLimit-${escapeHTML(runner.id)}" type="number" inputmode="numeric" min="1" max="100" step="1" placeholder="不限" value="${limit>0?limit:''}" data-runner-run-limit="${escapeHTML(runner.id)}" aria-label="${escapeHTML(runner.name||runner.id)} 最多同时运行条数">条</label><span class="runner-tip" tabindex="0" role="no
+web/app/runners.js:46 str | umber.isInteger(value)||value<0||value>100){toast( || '请输入 1-100 的整数，留空表示不限'
+web/app/runners.js:51 tpl$ | runner?.id)state.runners[i]=runner; toast(value>0? || `已设置：最多同时运行 ${value} 条`
+web/app/runners.js:51 str | [i]=runner; toast(value>0?`已设置：最多同时运行 ${value} 条`: || '已设为不限'
+web/app/runners.js:55 str | l(status,lastSeen){ const label=status==='online'? || '在线'
+web/app/runners.js:55 str | t label=status==='online'?'在线':status==='offline'? || '离线'
+web/app/runners.js:55 str | ==='online'?'在线':status==='offline'?'离线':(status|| || '未知'
+web/app/runners.js:60 str | ess',zcode:'ZCode'}; const runnerAuthLabel={local: || '账号登录'
+web/app/runners.js:61 str | al:'API Key'}; const runnerAuthDescription={local: || 'Claude Code、Codex 和 Antigravity 可以使用运行 Runner 的系统账号在这台机器上的已有登录，对话与 SOP 的 native、Docker 沙箱均可复用。共享对话中，只有机器所有者发言时会使用此登录。'
+web/app/runners.js:61 str | e、Docker 沙箱均可复用。共享对话中，只有机器所有者发言时会使用此登录。',personal: || '读取「个人配置」中保存的 API Key。对话使用当前发言人的 Key，SOP 使用运行责任人的 Key。Antigravity 的 Gemini API Key 按 API 单独计费。'
+web/app/runners.js:64 str | scription(provider){ if(provider==='zcode')return  || 'GLM Coding Plan 的 API Key 配合套餐专用地址可使用订阅额度，请在「个人配置」中填写。Start Plan 额度需要登录 ZCode 账号，无法通过 API Key 使用。'
+web/app/runners.js:65 str | rt Plan 额度需要登录 ZCode 账号，无法通过 API Key 使用。'; return  || '该 CLI 支持 API Key。使用服务商订阅套餐提供的 Key，执行用量会计入对应的套餐额度。请在「个人配置」中填写 API Key。'
+web/app/runners.js:84 str | Configured(runtime.provider); const title=missing? || ' title="请在个人配置中填写 API Key"'
+web/app/runners.js:85 tpl$ | 填写 API Key"':''; if(!shared&&supportsLogin)return  || `<select class="runner-auth-select${mode==='personal'?' is-personal':''}" data-runner-auth="${escapeHTML(key)}" aria-label="${runnerCLILabels[runtime.provider]} 认证方式"${title} ${busy?'disabled':''}>
+    <option value="local" ${mode==='local'?'selected':''}>${runnerAuthLabel.local}</option>
+    <option value="personal" ${mode==='personal'?'selected':''}>${runnerAuthLabel.personal}</option>
+  </se
+web/app/runners.js:89 tpl$ | ption> </select>`; const keyHelp=supportsLogin?'': || `<button class="runner-auth-tip" type="button" data-runner-key-help="${runtime.provider}" aria-label="${runnerCLILabels[runtime.provider]} API Key 说明" aria-haspopup="dialog" title="${escapeHTML(runnerKeyDescription(runtime.provider))}"><span aria-hidden="true">?</span></button>`
+web/app/runners.js:99 tpl$ | entFlowAssistantModels?.cliIcon(provider); return  || `<div class="runner-runtime-row ${disabled?'off':''}">
+    <label class="runner-runtime-label">
+      <input type="checkbox" data-runner-cli="${safeKey}" ${disabled?'':'checked'} ${shared?'disabled':''} aria-label="启用 ${label}">
+      <span class="runner-runtime-icon ${provider}" aria-hidden="true">${icon?`
+web/app/runners.js:102 tpl$ | a-hidden="true">${icon?`<img src="${icon}" alt=""> || `:''}</span>
+      <span class="runner-runtime-name"><b>${label}</b><small title="${escapeHTML(runtime.binaryPath||'')}">${escapeHTML(runtime.version||runtime.binaryPath||'已发现')}</small></span>
+    </label>
+    ${runnerAuthHTML(runtime,key,busy,shared)}
+    ${shared?'':`
+web/app/runners.js:106 str |  data-runner-runtime-menu="${safeKey}" aria-label= || "${label} 更多操作"
+web/app/runners.js:110 str |  function runnerLastSeen(value){ if(!value)return  || '尚无心跳'
+web/app/runners.js:112 tpl$ | te(value).getTime())/1000)); if(seconds<60)return  || `${seconds} 秒前`
+web/app/runners.js:113 tpl$ | 60)return `${seconds} 秒前`; if(seconds<3600)return  || `${Math.floor(seconds/60)} 分钟前`
+web/app/runners.js:120 str | tn.dataset.label=btn.textContent; btn.textContent= || '已复制'
+web/app/runners.js:124 str | opied')},1400); }; if(!navigator.clipboard){toast( || '复制失败，请手动选择复制'
+web/app/runners.js:125 str | pboard.writeText(text).then(done).catch(()=>toast( || '复制失败，请手动选择复制'
+web/app/runners.js:134 str | tokenSpan.textContent=state.runnerBindCode?.code|| || '生成中…'
+web/app/runners.js:138 str | ')?.innerText||''; runnerCopyCommand(copyBtn,text, || '已复制，10 分钟内有效'
+web/app/runners.js:145 str | ?.innerText||''; runnerCopyCommand(copyUnBtn,text, || '已复制卸载命令'
+web/app/runners.js:156 str | f(def){ warn=def.status!=='online'; text=warn? || '默认机器已离线，新任务会失败。请启动它或切回云端'
+web/app/runners.js:156 tpl$ | !=='online'; text=warn?'默认机器已离线，新任务会失败。请启动它或切回云端': || `在 ${def.name||def.id} 上执行`
+web/app/runners.js:159 tpl$ | figured){ warn=!pool.online; text=pool.online? || `云端执行 · ${pool.online} 台在线`
+web/app/runners.js:159 str | ine; text=pool.online?`云端执行 · ${pool.online} 台在线`: || '云端暂无在线机器，新任务最多等待 10 分钟'
+web/app/runners.js:161 str | ine} 台在线`:'云端暂无在线机器，新任务最多等待 10 分钟'; }else{ text= || '在平台云端执行'
+web/app/runners.js:173 str | r,rt,shared)).join(''); const cliSection=cliRows|| || '<div class="runner-runtime-empty">未发现支持的 Agent CLI</div>'
+web/app/runners.js:177 tpl$ | ecking=runnerMaintenancePending.has(r.id); return  || `<article class="runner-card panel ${isDefault?'is-default':''}">
+      <div class="runner-card-head">
+        <span class="runner-machine-icon" aria-hidden="true">${huiIcon('monitor')}</span>
+        <div class="runner-card-title">
+          <div class="runner-card-name"><b title="${escapeHTML(r.name||r.id)}">${escapeHTML(r.name||r.id)}</b>${isDefault?'<span class="runner-tag default">默认</spa
+web/app/runners.js:184 str | Icon(checking?'arc-spinner':'refresh')}${checking? || '处理中…'
+web/app/runners.js:184 str | ecking?'arc-spinner':'refresh')}${checking?'处理中…': || '检查更新'
+web/app/runners.js:187 str | p" type="button" data-runner-auth-help aria-label= || "模型认证说明"
+web/app/runners.js:187 tpl$ | up="dialog">模型认证 ${huiIcon('info')}</button></div> || `:''}
+        ${cliSection}
+      </div>
+      <div class="runner-card-action">
+        ${runnerRunLimitHTML(r)}
+        <span class="runner-card-spacer"></span>
+        ${isDefault?'<button class="button ghost small runner-text-button" type="button" data-set-default="">切回云端</button>':''}
+        ${r.status==='online'?'':`
+web/app/runners.js:194 str | n" data-remove-runner="${escapeHTML(r.id)}" title= || "机器已不再使用时移除绑定"
+web/app/runners.js:198 str | </button>`} </div> </article>`; }).join('')|| || '<div class="runner-empty"><b>还没有机器</b><span>执行上方命令后自动出现</span></div>'
+web/app/runners.js:218 str | p]').forEach(btn=>btn.onclick=()=>afAlert({ title: || '模型认证方式'
+web/app/runners.js:224 tpl$ | n.dataset.runnerKeyHelp; return afAlert({ title: || `${runnerCLILabels[provider]} API Key 说明`
+web/app/runners.js:244 str | d(r=>r.id===runnerId); if(!await afConfirm({title: || '移除执行机器'
+web/app/runners.js:244 tpl$ | rId); if(!await afConfirm({title:'移除执行机器',message: || `确定移除 ${runner?.name||runnerId}？之后如需再用这台机器，重新复制接入命令执行即可。`
+web/app/runners.js:244 str | ||runnerId}？之后如需再用这台机器，重新复制接入命令执行即可。`,confirmText: || '移除'
+web/app/runners.js:247 str | RIComponent(runnerId)}`,{method:'DELETE'}); toast( || '已移除'
+web/app/runners.js:261 str | rDefaultBlocker(r){ if(r.status!=='online')return  || '机器离线'
+web/app/runners.js:263 tpl$ | !runnerVersionAtLeast(r.runnerVersion,min))return  || `执行机器版本 ${r.runnerVersion||'未知'} 过低，需升级至 ${min} 及以上`
+web/app/runners.js:269 str | JSON.stringify({runnerId})}); toast(out?.message|| || '已更新'
+web/app/runners.js:278 tpl$ | ON.stringify({runnerId,provider,status})}); toast( || `${runnerCLILabels[provider]||provider} 已${status==='online'?'启用':'停用'}`
+web/app/runners.js:288 str | red(provider); toast(authMode==='personal'?(ready? || '将使用「个人配置」中的 API Key'
+web/app/runners.js:288 str | uthMode==='personal'?(ready?'将使用「个人配置」中的 API Key': || '已切换，请先到「个人配置」补充该 CLI 的 API Key'
+web/app/runners.js:288 str | 人配置」中的 API Key':'已切换，请先到「个人配置」补充该 CLI 的 API Key'): || '将使用这台机器上已登录的 CLI 账号'
+web/app/runners.js:303 tpl$ | body:JSON.stringify({runnerId,provider})}); toast( || `${runnerCLILabels[provider]} 测试通过`
+web/app/runners.js:336 str | Pending.has(key); const actions=[ {label:testBusy? || '测试中…'
+web/app/runners.js:336 str | .has(key); const actions=[ {label:testBusy?'测试中…': || '测试'
+web/app/runners.js:337 str | estRunnerRuntime(id,provider)}, {label:updateBusy? || '更新中…'
+web/app/runners.js:337 str | erRuntime(id,provider)}, {label:updateBusy?'更新中…': || '更新'
+web/app/runners.js:338 str | ,run:()=>updateRunnerCLI(runner,runtime)}, {label: || '模型列表'
+web/app/runners.js:341 tpl$ | utton>`).join(''); menu.setAttribute('aria-label', || `${runnerCLILabels[provider]} 更多操作`
+web/app/runners.js:372 tpl$ | penDialog(modal=>{ $('#confirmTitle').textContent= || `${runnerCLILabels[provider]} 模型列表`
+web/app/runners.js:373 str | provider]} 模型列表`; const keySource=kind.extra?.url? || 'API Key 和服务地址'
+web/app/runners.js:373 str | Source=kind.extra?.url?'API Key 和服务地址':kind.extra? || 'API Key 和网络环境'
+web/app/runners.js:375 str | I Key'; $('#confirmMessage').textContent=local ? || '与个人配置共用模型目录。获取时使用这台机器的账号登录。'
+web/app/runners.js:376 tpl$ | Content=local ?'与个人配置共用模型目录。获取时使用这台机器的账号登录。' : || `与个人配置共用模型目录。获取时使用个人配置里的 ${keySource}。`
+web/app/runners.js:381 str | d,credentialUser(),{runnerLogin:local,label:local? || '账号登录'
+web/app/runners.js:391 str | rovider}),silent:true }); } ok.textContent= || '保存'
+web/app/runners.js:392 str | ton primary';ok.disabled=true; cancel.textContent= || '取消'
+web/app/runners.js:427 str | ed=true; cancel.disabled=true; ok.textContent= || '保存中…'
+web/app/runners.js:431 str |  await saveCredential(kind.key,{models}); toast( || '模型列表已保存'
+web/app/runners.js:436 str |  toast(err.message,'err'); ok.textContent= || '保存'
+web/app/runners.js:465 str | anUpdate){ const confirmed=await afConfirm({title: || 'Runner 有可用更新'
+web/app/runners.js:465 tpl$ | med=await afConfirm({title:'Runner 有可用更新',message: || `当前版本 ${result.current||'未知'}。更新会重启空闲的 Runner。`
+web/app/runners.js:465 str | sult.current||'未知'}。更新会重启空闲的 Runner。`,confirmText: || '立即更新'
+web/app/runners.js:471 tpl$ |  } }else if(result.status==='current'){ toast( || `Runner ${result.current||''} 已是平台当前版本`
+web/app/runners.js:473 str | e(' ',' '),'ok'); }else{ toast(result.message|| || '暂时无法检查更新'
+web/app/runners.js:484 tpl$ | bility==='managed_update')){ await afAlert({title: || `更新 ${label}`
+web/app/runners.js:484 str | te')){ await afAlert({title:`更新 ${label}`,message: || '请在这台执行机器上使用原来的安装方式更新。更新后刷新机器列表即可看到版本。'
+web/app/runners.js:508 tpl$ | nst version=result.version||result.current; toast( || `${label}${version?' '+version:''} 已就绪`
+web/app/runners.js:511 tpl$ | &&result.status==='manual'){ await afAlert({title: || `更新 ${label}`
+web/app/runners.js:511 str | lert({title:`更新 ${label}`,message:result.message|| || '请在执行机器上使用该 CLI 原来的安装方式更新'
+web/app/runners.js:513 tpl$ | 更新'}); }else if(result.status==='ready'){ toast( || `${label} 更新状态已中断，请刷新确认版本`
+web/app/runners.js:515 tpl$ | 确认版本`,'err',5000); }else{ toast(result.message|| || `${label} 还有可用更新，请再次检查`
+web/app/runners.js:519 tpl$ | iled'?'err':'info',5000); } return; } toast( || `等待 ${label} 更新超时，请稍后检查版本`
+web/app/observability.js:97 tpl$ | .UTC(y,m-1,1)),to:new Date(Date.UTC(y,m,1)),label: || `${y}年${m}月`
+web/app/observability.js:97 tpl$ | te(Date.UTC(y,m,1)),label:`${y}年${m}月`,shortLabel: || `${m}月`
+web/app/observability.js:150 tpl$ | bsWeekLabel(d); if(/^\d{4}-\d{2}$/.test(d))return  || `${Number(d.slice(5))}月`
+web/app/observability.js:189 tpl$ | up?'↑':'–'; const pct=Math.abs(delta.pct); return  || `<em class="obs-delta ${tone}">${arrow} ${pct>=10?pct.toFixed(0):pct.toFixed(1)}% <span>较${escapeHTML(delta.previousLabel)}</span></em>`
+web/app/observability.js:191 str | sTrendGrain()==='all'||obsTrendGrain()==='month')? || '月'
+web/app/observability.js:191 str | ndGrain()==='month')?'月':obsTrendGrain()==='week'? || '周'
+web/app/observability.js:191 str | ain()==='month')?'月':obsTrendGrain()==='week'?'周': || '日'
+web/app/observability.js:193 str | RangeCaption(){ if(obsTrendGrain()==='all')return  || '累计'
+web/app/observability.js:195 str | ,obsTrendGrain()); return range?range.shortLabel:( || '本'
+web/app/observability.js:236 tpl$ | (grain); let control=''; if(grain==='day')control= || `<input type="date" id="obsPeriodInput" class="obs-period-input" value="${escapeHTML(key)}" aria-label="选择日期">`
+web/app/observability.js:237 tpl$ | a-label="选择日期">`; else if(grain==='month')control= || `<input type="month" id="obsPeriodInput" class="obs-period-input" value="${escapeHTML(key)}" aria-label="选择月份">`
+web/app/observability.js:238 tpl$ | capeHTML(key)}" aria-label="选择月份">`; else control= || `<select id="obsPeriodInput" class="obs-period-input" data-obs-select data-icon="calendar" aria-label="选择周">${obsPeriodChoices().map(w=>`
+web/app/observability.js:239 tpl$ | Label(w))}</option>`).join('')}</select>`; return  || `<div class="obs-period-picker" role="group" aria-label="选择时段"><button type="button" class="obs-icon-btn" data-obs-period-step="-1" title="上一段" aria-label="上一段">${obsIcon('chevron-left')}</button>${control}<button type="button" class="obs-icon-btn" data-obs-period-step="1" title="下一段" aria-label="下一段">${obsIcon('chevron-right')}</button></div>`
+web/app/observability.js:251 tpl | st=obsTrendWindow(points); if(!list.length)return  || `<div class="detail-empty">暂无趋势</div>`
+web/app/observability.js:272 tpl$ |  active=selected&&list[i].date===selected; return  || `<circle class="${active?'obs-chart-dot-active':''}" data-obs-period="${escapeHTML(list[i].date||'')}" cx="${x.toFixed(1)}" cy="${ys[i].toFixed(1)}" r="${active?5:list.length>16?2.4:3.4}"><title>${escapeHTML(obsTrendLabel(list[i]))}：${obsFormatTrendValue(values[i],metric)}（点击查看该时段）</title></circle>`
+web/app/observability.js:274 tpl$ | }（点击查看该时段）</title></circle>`; }).join(''); return  || `<svg class="obs-trend-svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="用量趋势">${yTicks}<path class="obs-chart-area" d="${area}"></path><path class="obs-chart-line" d="${line}"></path>${dots}${labels}</svg>`
+web/app/observability.js:352 tpl |  const host=$('#obsBody'); if(host)host.innerHTML= || `<div class="obs-pane active"><div class="detail-empty">正在加载交付数据…</div></div>`
+web/app/observability.js:365 tpl |  const host=$('#obsBody'); if(host)host.innerHTML= || `<div class="obs-pane active"><div class="detail-empty">正在加载用量数据…</div></div>`
+web/app/observability.js:419 str | obsUserName(id){ if(!id||id==='unassigned')return  || '未分配'
+web/app/observability.js:451 str | (); const projectName=project?.name||project?.id|| || '当前项目'
+web/app/observability.js:455 str | rDisplay(current):(selected?obsUserName(selected): || '全部成员'
+web/app/observability.js:458 tpl$ | const people=obsUserChoices(); const userOptions=[ || `<option value=""${!selected?' selected':''} data-search="all 全部成员">全部责任人</option>`
+web/app/observability.js:459 tpl$ | scapeHTML(`${u.loginName||''} ${u.chineseName||''} || `)}"${id===me?' data-meta="我"':''}>${escapeHTML(userDisplay(u))}</option>`
+web/app/observability.js:461 str | HTML(label)}</option>`); const originChoices=[['', || '全部执行'
+web/app/observability.js:461 str | >`); const originChoices=[['','全部执行'],['internal', || '平台内'
+web/app/observability.js:461 str | oices=[['','全部执行'],['internal','平台内'],['external', || '外部工作流'
+web/app/observability.js:462 str | ],['external','外部工作流']]; const sourceChoices=[['', || '全部来源'
+web/app/observability.js:462 str | 工作流']]; const sourceChoices=[['','全部来源'],['local', || '本地'
+web/app/observability.js:466 tpl$ | in=obsTrendGrain(); const hint=scope==='project' ? || `项目指标 = 顶栏当前项目「${projectName}」全部成员的运行、Token 和交付，不是全平台汇总。${grain==='all'?'当前看全部历史，趋势按月聚合，点一个月可下钻。':'上方数字和 Loop 指标只含所选时段；点趋势图或用两侧箭头换一天 / 一周 / 一月。'}`
+web/app/observability.js:467 tpl$ | '上方数字和 Loop 指标只含所选时段；点趋势图或用两侧箭头换一天 / 一周 / 一月。'}` : || `个人指标 = 责任人在当前项目「${projectName}」里的执行。一人多项目时，下方「各项目」看他在其他项目的量，不会加进上面的 KPI。${grain==='all'?'当前看全部历史，趋势按月聚合，点一个月可下钻。':'上方数字和 Loop 指标只含所选时段；点趋势图或用两侧箭头换一天 / 一周 / 一月。'}`
+web/app/observability.js:468 tpl$ | 一天 / 一周 / 一月。'}`; const userFilter=scope==='user'? || `<select id="obsUserFilter" data-obs-select data-icon="user" aria-label="责任人">${userOptions.join('')}</select>`
+web/app/observability.js:469 tpl$ | ptions.join('')}</select>`:''; const originFilter= || `<select id="obsOriginFilter" data-obs-select data-icon="run-live" aria-label="执行">${originChoices.map(([v,l])=>`
+web/app/observability.js:470 tpl$ | option>`).join('')}</select>`; const sourceFilter= || `<select id="obsSourceFilter" data-obs-select data-icon="connector" aria-label="需求来源">${sources}</select>`
+web/app/observability.js:473 tpl$ | ; const chips=[]; if(scope==='project')chips.push( || `<span class="obs-chip">项目「${escapeHTML(projectName)}」全部成员</span>`
+web/app/observability.js:474 tpl$ | Name)}」全部成员</span>`); else if(selected)chips.push( || `<span class="obs-chip">「${escapeHTML(projectName)}」项目内 · ${escapeHTML(label)} 负责的执行${clear('user','清除责任人')}</span>`
+web/app/observability.js:475 tpl$ | {clear('user','清除责任人')}</span>`); else chips.push( || `<span class="obs-chip">「${escapeHTML(projectName)}」项目内 · 全部成员</span>`
+web/app/observability.js:476 tpl$ | 部成员</span>`); if(state.obsOriginFilter)chips.push( || `<span class="obs-chip">${escapeHTML((originChoices.find(([v])=>v===state.obsOriginFilter)||[,state.obsOriginFilter])[1])}${clear('origin','清除执行来源')}</span>`
+web/app/observability.js:477 tpl$ | ')}</span>`); if(state.obsSourceFilter)chips.push( || `<span class="obs-chip">${escapeHTML(obsSourceLabel(state.obsSourceFilter))}需求${clear('source','清除需求来源')}</span>`
+web/app/observability.js:480 tpl$ | =obsPeriodRange(obsPeriodKey(),grain); chips.push( || `<span class="obs-chip">${escapeHTML(range?range.label:obsRangeCaption())}${clear('period','回到全部')}</span>`
+web/app/observability.js:482 tpl$ | )}</span>`); } const manage=obsCanManageSources()? || `<button class="obs-btn ghost" id="obsManageSources" type="button" title="外部数据源" aria-label="外部数据源">${obsIcon('integration')}<span>外部数据源</span></button>`
+web/app/observability.js:483 tpl$ | gration')}<span>外部数据源</span></button>`:''; return  || `<div class="obs-fbar"><div class="obs-fbar-row">${obsSeg('data-obs-scope',[['user','个人',0,'','user'],['project','项目',0,'','users']],scope)}${userFilter}${originFilter}${sourceFilter}<span class="obs-sp"></span>${obsSeg('data-obs-grain',[['all','全部'],['day','日'],['week','周'],['month','月']],grain)}${obsPeriodPicker()}${manage}</div><div class="obs-scopeline"><span>统计范围</span>${chips.join('')}<span 
+web/app/observability.js:492 str | ProjectName(id){ if(!id||id==='unassigned')return  || '未归属项目'
+web/app/observability.js:516 tpl$ | nd:list.length}; const body=paged.items.join('')|| || `<tr><td colspan="${colspan||headers.length}" class="detail-empty">暂无数据</td></tr>`
+web/app/observability.js:522 str | ber(value||0); if(known===false&&amount<=0)return  || '<span class="muted">未识别</span>'
+web/app/observability.js:523 str | .toPrecision(3):amount.toFixed(2))+(known===false? || '（部分未识别）'
+web/app/observability.js:560 tpl$ | ry?.issues||0;badge.hidden=!n;badge.textContent=n? || `${n} 单`
+web/app/observability.js:627 str | if(btn){btn.innerHTML=OBS_COLLAPSE_ICON;btn.title= || '关闭'
+web/app/observability.js:627 str | ICON;btn.title='关闭';btn.setAttribute('aria-label', || '关闭放大窗口'
+web/app/observability.js:662 tpl$ | dy,opts){ opts=opts||{}; const expand=opts.expand? || `<button type="button" class="obs-x-btn" data-obs-expand="${escapeHTML(key)}" title="放大" aria-label="放大查看">${OBS_EXPAND_ICON}</button>`
+web/app/observability.js:704 tpl$ | >`<div class="obs-ins"><p>${i.text}</p>${i.action? || `<a href="#" ${i.action}>${escapeHTML(i.label||'查看')}</a>`
+web/app/observability.js:708 str | TraceSourceLabel(t){return t.origin==='external'?( || '外部 · '
+web/app/observability.js:708 str | n t.origin==='external'?('外部 · '+(t.workflowName|| || '工作流'
+web/app/observability.js:712 str | lures||[]){ const code=String(f.code||'').trim()|| || '未知错误'
+web/app/observability.js:741 tpl$ | stages[funnel.worst-1]?.name:''; items.push({text: || `<b>${d.delivered||0} / ${d.issues}</b> 单已交付${worst?`
+web/app/observability.js:741 str | on:`data-obs-funnel="${worst?.key||'all'}"`,label: || '查看'
+web/app/observability.js:745 tpl$ | &&d.averageExecutionDurationMs){ items.push({text: || `需求平均端到端 <b>${duration(d.averageDurationMs)}</b>，单次执行平均 ${duration(d.averageExecutionDurationMs)}`
+web/app/observability.js:748 tpl$ | y.runsPerIssue!=null&&d.issues){ items.push({text: || `每需求执行 <b>${Number(summary.runsPerIssue).toFixed(2)}</b> 次${summary.failuresPerIssue!=null?`
+web/app/observability.js:766 tpl$ | )===Math.sign(tokenDelta.delta); items.push({text: || `Token 环比 <b>${obsSignedPct(tokenDelta.pct)}</b>${sameDir?`
+web/app/observability.js:766 str | p[1])}）`:''}`,action:'data-obs-jump="sops"',label: || 'SOP 明细'
+web/app/observability.js:770 tpl$ | ns,0); if(flows.length>=2&&total)items.push({text: || `<b>${escapeHTML(flows[0].name||flows[0].key)}</b> 占 Token ${(flows[0].tokens*100/total).toFixed(0)}%，共 ${flows.length} 个 SOP`
+web/app/observability.js:770 str | ength} 个 SOP`,action:'data-obs-jump="sops"',label: || 'SOP 明细'
+web/app/observability.js:777 tpl$ | ){ const parts=[]; if(cache.rate!=null)parts.push( || `缓存命中 <b>${cache.rate.toFixed(0)}%</b>${cache.prevRate!=null?`
+web/app/observability.js:778 tpl$ | t`:''}`); if(models.length&&modelTotal)parts.push( || `${escapeHTML(models[0].name||models[0].key)} 占 ${(models[0].tokens*100/modelTotal).toFixed(0)}%`
+web/app/observability.js:779 str | s.join('；'),action:'data-obs-jump="models"',label: || '模型明细'
+web/app/observability.js:788 tpl$ | ed)/i.test(top.code); const reason=view.period ? || `，累计失败原因最多的是 ${escapeHTML(top.code)}（${top.count} 次）`
+web/app/observability.js:789 tpl$ | p.count} 次）` :(groups.length===1||top.count===all? || `，原因均为 ${escapeHTML(top.code)}`
+web/app/observability.js:789 tpl$ | ||top.count===all?`，原因均为 ${escapeHTML(top.code)}`: || `，最多的是 ${escapeHTML(top.code)}（${top.count} 次）`
+web/app/observability.js:790 tpl$ | ML(top.code)}（${top.count} 次）`); items.push({text: || `<b>${failed} 次失败</b>${reason}`
+web/app/observability.js:790 str | ttings"':'data-obs-jump="fails"',label:credential? || '配置凭据'
+web/app/observability.js:790 str | ':'data-obs-jump="fails"',label:credential?'配置凭据': || '失败明细'
+web/app/observability.js:792 tpl$ | 据':'失败明细'}); }else if(failed>0){ items.push({text: || `<b>${failed} 次失败</b>`
+web/app/observability.js:792 str | ed} 次失败</b>`,action:'data-obs-jump="fails"',label: || '失败明细'
+web/app/observability.js:843 str | olspan="${tbl.headers.length}" class="detail-empty || ">${q?'没有匹配的行':escapeHTML(tbl.empty||'暂无数据')}</td></tr>`;
+  return `${tbl.title?`<h4 class="
+web/app/observability.js:913 str | harset=utf-8'}); const a=document.createElement('a || ');
+  a.href=URL.createObjectURL(blob);
+  a.download=obsCsvFileName(item.title);
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+}
+
+// ---------- 放大窗口 ----------
+// 每个页面在自己的视图里放一个 .obs-expand，隐藏视图里的弹窗无法显示。
+function obsExpandModal(card){
+  const modal=card?.closest?.('
+web/app/observability.js:947 str | ==null?'—':hit.toFixed(0)+'%'}</td></tr>`}).join(' || ');
+  return `<h4>逐${obsGrainCaption()}数据<span>点一行等同点图</span></h4><div class="obs-tw"><table class="obs-table"><thead><tr><th>${obsGrainCaption()}</th><th>Token</th><th>成本</th><th>运行</th><th>需求</th><th>成功率</th><th>缓存命中</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function obsRenderExpandExtra(){
+  const box=(obsExpandState?.modal||document.getElementById('
+web/app/observability.js:1002 str | onst el of card.querySelectorAll('[data-obs-chart] || ')){const entry=obsChartEntry(el.dataset.obsChart);if(entry&&entry.el===el)entry.chart.resize()}
+    if(!opts.silent)btn?.focus({preventScroll:true});
+  }
+}
+
+// ---------- 数字滚动 ----------
+function obsCountUp(el){
+  if(!el||el.dataset.obsCounted)return;
+  el.dataset.obsCounted='
+web/app/observability.js:1059 str | ormatTokens(usage.tokens||0)), foot:!usage?'暂无用量统计 || ':missing?`${missing} 条回复未采集 · 仅含已记录部分`:`输入 ${formatTokens(usage.inputTokens||0)} / 输出 ${formatTokens(usage.outputTokens||0)}`,
+    tip:[
+      collaborative?'
+web/app/observability.js:1064 str | ',usage?formatTokens(usage.cacheWriteTokens||0):'— || '],
+      ...(undated?[`${undated} 条回复缺少时间，仅计入累计用量。`]:[]),
+    ],
+  };
+}
+function obsActivityKpis(){
+  const a=obsActivityView();
+  const n=key=>a?String(a[key]||0):'
+web/app/observability.js:1078 str | ]}, {label:'多人协作会话',value:n('collaborativeSessions || '),foot:a?(sessions?`占会话 ${rate.toFixed(1)}%`:'
+web/app/observability.js:1096 str | v=>v!=null)); const cum=(text)=>view.period?text:' || ';
+  const tokenFoot=view.inputTokens!=null?`入 ${formatTokens(view.inputTokens)} / 出 ${formatTokens(view.outputTokens)}`:(view.period?`该${obsGrainCaption()} ${formatTokens(totalTokens)}`:`累计 ${formatTokens(totalTokens)}`);
+  const successFoot=`${succeeded} 成功 / ${failed} 失败${view.firstPass!=null?` · 一次通过 ${total?percent(view.firstPass):'
+web/app/observability.js:1099 str | ss):'—'}`:''}`; const costFoot='人民币 · Hy 上报 / 其他公价 || ';
+  const deltaTip=prevLabel?[`环比对象：${escapeHTML(prevLabel)}`]:[];
+  const convTokens=view.conversationTokens||0,convCost=view.conversationCost||0;
+  const convTip=convTokens?[['
+web/app/observability.js:1104 str | (cache.write||0)],...convTip,...(view.period?[['累计 || ',formatTokens(summary.totalTokens)]]:[]),...deltaTip]},
+    {label:`${rangeName}成本`,value:costLabel(totalCost,view.costKnown),delta:dl(d('
+web/app/observability.js:1105 str | tKnown),delta:dl(d('cost'),true),spark:spark('cost || '),foot:costFoot+cum(` · 累计 ${costLabel(summary.totalCostCny,summary.costUnknownRuns===0)}`),tip:[...(convCost?[['
+web/app/observability.js:1106 str | l?obsDelta(cache.rate,cache.prevRate,false,'pt'):' || ',meter:cache.rate==null?0:cache.rate,foot:`缓存读 ${formatTokens(cache.read||0)}`,tip:['
+web/app/observability.js:1108 str | 。越高越省。']}, ]); const output=obsKpiGroup('SOP 产出与质量 || ',[
+    {label:`${rangeName}运行`,value:String(total),delta:dl(d('
+web/app/observability.js:1109 str | tring(total),delta:dl(d('runs')),spark:spark('runs || '),foot:`${view.active||0} 进行中${cum(` · 累计 ${summary.totalRuns||0}`)}`,tip:['
+web/app/observability.js:1109 str | '成功',String(succeeded)],['失败',String(failed)],['取消 || ',String(view.cancelled||0)],...deltaTip]},
+    {label:`${rangeName}需求`,value:String(view.uniqueIssues||0),delta:dl(d('
+web/app/observability.js:1110 str | sues||0),delta:dl(d('issues')),spark:spark('issues || '),foot:`每单 ${view.runsPerIssue!=null?Number(view.runsPerIssue).toFixed(1):'
+web/app/observability.js:1110 str | ssue!=null?Number(view.runsPerIssue).toFixed(1):'— || '} 次${cum(` · 累计 ${summary.uniqueIssues||0}`)}`,tip:['
+web/app/observability.js:1112 str | abel:'P95 执行',value:view.p95?duration(view.p95):'— || ',foot:`平均 ${view.avgExec?duration(view.avgExec):'
+web/app/observability.js:1112 str | ,foot:`平均 ${view.avgExec?duration(view.avgExec):'— || '}${view.wait?` · 等待 ${duration(view.wait)}`:'
+web/app/observability.js:1116 str | ue:total?formatTokens(demo.averageTokensPerRun):'— || ',foot:`SOP ${formatTokens(view.sopTokens??totalTokens)} ÷ ${total} 次运行`},
+    {label:'
+web/app/observability.js:1117 str | toolCallsObserved?percent(demo.toolSuccessRate):'— || ',meter:demo.toolCallsObserved?demo.toolSuccessRate:0,foot:`${demo.toolCallsSucceeded||0} 成功 / ${demo.toolCallsFailed||0} 失败 · 仅统计完成事件`},
+    {label:'
+web/app/observability.js:1118 str | r(demo.averageHumanInterventions||0).toFixed(2):'— || ',foot:`${demo.humanInterventions||0} 次人工决策 ÷ ${demo.coveredRuns||0} 平台内 runs · 不含暂停/恢复`},
+    {label:'
+web/app/observability.js:1119 str | veredSucceededRuns?percent(demo.automationRate):'— || ',meter:demo.coveredSucceededRuns?demo.automationRate:0,foot:`${demo.automatedSucceededRuns||0} 个全自动成功 / ${demo.coveredSucceededRuns||0} 个平台内成功`},
+  ],`<span class="obs-info" tabindex="0">口径<span class="obs-tip" role="tooltip">${view.period?`仅统计 ${escapeHTML(rangeName)} 内的 Run，可点趋势换时段。`:'
+web/app/observability.js:1120 str | '所有数字均可下钻到 workflow_task_id、run_id、trace_id 和原始事件。 || '}只统计 SOP 运行，不含对话改代码。自动完成率仅统计有平台事件的执行；外部汇总不推断人工干预。</span></span>`);
+  return obsKpiGroups([output,usage])+(conv?obsKpiGroups([conv],'
+web/app/observability.js:1132 str | ost,totalCost); return obsKpiGroup('对话改代码 · 不走 SOP || ',[
+    {label:`${rangeName}需求`,value:String(view.conversationIssues||0),foot:`${view.period?`累计 ${summary.conversationIssues||0} 个，`:'
+web/app/observability.js:1133 str | riod?`累计 ${summary.conversationIssues||0} 个，`:'其中  || '}${summary.conversationIssuesWithMr||0} 个已提 PR · ${summary.conversationIssuesDelivered||0} 个已交付`,tip:['
+web/app/observability.js:1133 str | 求去重。','只在对话里完成的需求，在「交付」页标为「对话直接交付」，PR 合入默认分支即算已交付。 || ']},
+    {label:`${rangeName} Token`,value:formatTokens(tokens),meter:tokenShare,foot:`占全部 Token ${pct(tokenShare)}`,tip:['
+web/app/observability.js:1134 str | ken ${pct(tokenShare)}`,tip:['已算进上方「投入」的 Token 合计。 || ']},
+    {label:`${rangeName}成本`,value:costLabel(cost,true),meter:costShare,foot:`占全部成本 ${pct(costShare)}`,tip:['
+web/app/observability.js:1135 str | ot:`占全部成本 ${pct(costShare)}`,tip:['已算进上方「投入」的成本合计。 || ']},
+    {label:`${rangeName}工作区`,value:String(spaces),foot:view.conversationLinked!=null?`${view.conversationLinked} 个已关联需求 · ${Math.max(0,spaces-view.conversationLinked)} 个未关联`:'
+web/app/observability.js:1136 str | p:['对话里每打开一个代码工作区计 1 个。工作区不是 SOP 运行，不计入运行数、成功率和耗时。 || ']},
+  ],`<span class="obs-info" tabindex="0">口径<span class="obs-tip" role="tooltip">在对话里直接改代码、不走 SOP 的部分。Token 和成本已算进「投入」合计；工作区和需求不计入「SOP 产出与质量」和「Loop 自动化」。</span></span>`);
+}
+
+// ---------- 趋势 ----------
+function obsTrendCard(){
+  const trend=state.analytics?.trend||[];
+  const list=obsTrendWindow(trend);
+  const grainName=obsGrainCaption();
+  const metric=obsTrendMetric();
+  const tok
+web/app/observability.js:1148 str | ','成本'],['runs','运行'],['issues','需求'],['rate','成功率 || ']],metric,true);
+  const compare=`<div class="obs-trend-compare"><span>最近一${grainName}（含未结束周期）Token <b>${obsFormatTrendValue(tokenDelta?tokenDelta.current:obsTrendValue(last,'
+web/app/observability.js:1149 str | ,true)||'<em class="obs-delta flat">样本不足，暂无环比</em> || '}<span>需求 <b>${obsFormatTrendValue(issueDelta?issueDelta.current:obsTrendValue(last,'
+web/app/observability.js:1153 str |  style="background:var(--c4)"></i>缓存写</span></div> || ':`<div class="obs-legend"><span><i style="background:var(--c1)"></i>本期</span>${hasPrev?'
+web/app/observability.js:1160 str | riod(p.date)} },240); return obsCard('trend','趋势变化 || ',`按${grainName}对比；点击某${grainName}查看该时段指标`,seg,`${compare}${chart}${legend}`,{expand:true,klass:'
+web/app/observability.js:1160 str | hart}${legend}`,{expand:true,klass:'obs-trend-card || '});
+}
+
+// ---------- Token 去向 ----------
+const OBS_BREAKDOWN_DIMS=[['
+web/app/observability.js:1194 str | 1); return [...rows.slice(0,limit-1),{key:'__other || ',name:`其他 ${rest.length} 项`,tokens:rest.reduce((n,r)=>n+Number(r.tokens||0),0),costCny:rest.reduce((n,r)=>n+Number(r.costCny||0),0),other:true},...pinned];
+}
+function obsBreakdownState(){
+  let dim=OBS_BREAKDOWN_DIMS.some(([k])=>k===state.obsBdDim)?state.obsBdDim:'
+web/app/observability.js:1212 str | ata-obs-bd-metric',[['tokens','Token'],['cost','成本 || ']],metric,true);
+  const legend=rows.map((r,i)=>`<button type="button" class="obs-bd-row" data-obs-bd-row="${i}" title="查看明细"><i style="background:${r.conversation?OBS_CONVERSATION_COLOR:['
+web/app/observability.js:1239 str | er?'':(dim==='origin'?(row.key==='external'?'外部':' || '):row.name));
+}
+
+// ---------- 质量 ----------
+function obsQualityCard(){
+  const view=obsScopedView();
+  const failed=view.failed||0,reworked=view.reworked,cancelled=view.cancelled||0,total=view.total||0;
+  const groups=obsFailureGroups().slice(0,4);
+  const max=Math.max(1,...groups.map(g=>g.count));
+  const reasons=groups.map(g=>{
+    const latest=obsFailureLatest(g.code,view.traces);
+
+web/app/observability.js:1251 str | toISOString()):''}</em></div></button>`; }).join(' || ');
+  const body=`<div class="obs-signal-row"><div><b data-obs-count>${failed}</b><span>失败</span></div><div><b data-obs-count>${reworked==null?'
+web/app/observability.js:1252 str | n></div><div><b data-obs-count>${reworked==null?'— || ':reworked}</b><span>返工</span></div><div><b data-obs-count>${cancelled}</b><span>取消</span></div><div><b>${total?percent(view.successRate):'
+web/app/observability.js:1252 str | </div><div><b>${total?percent(view.successRate):'— || '}</b><span>成功率</span></div></div>${reasons?`<h4 class="obs-sub-title">${view.period?'
+web/app/observability.js:1252 str | 失败原因（累计）':'失败原因'}<span>${view.period?'不随所选时段变化；':' || '}点一条查看失败明细</span></h4><div class="obs-fails">${reasons}</div>`:'
+web/app/observability.js:1253 str | </div>'}`; return obsCard('quality','质量信号','失败优先处理 || ',`<a href="#" class="obs-link" data-obs-jump="nodes">节点明细</a>`,body);
+}
+
+// ---------- 时段热力 ----------
+function obsTraceWeekHour(traces){
+  const bag=new Map();
+  for(const t of traces||[]){
+    const at=obsTraceEventAt(t);
+    if(!at)continue;
+    const weekday=(at.getDay()+6)%7,hour=at.getHours();
+    const k=weekday*24+hour;
+    const c=bag.get(k)||{weekday,hour,runs:0,tokens:0,cost
+web/app/observability.js:1279 str | metric=state.obsHeatMetric==='runs'?'runs':'tokens || ';
+  const peak=obsHeatPeak(list,metric);
+  const peakText=peak?`高峰 ${OBS_WEEKDAYS[peak.weekday]} ${String(peak.hour).padStart(2,'
+web/app/observability.js:1288 str | onst tz=obsTimeZone(); return obsCard('heat','执行时段 || ',`星期 × 小时（${escapeHTML(tz)}）${peakText?'
+web/app/observability.js:1291 str | ).resolvedOptions().timeZone||''}catch(e){return ' || '}
+}
+
+// ---------- 明细定义 ----------
+function obsTraceRows(traces){
+  return traces.map(t=>{
+    const source=t.origin==='
+web/app/observability.js:1302 str | ternal'?`<code title="${escapeHTML(t.externalId||' || ')}">外部执行 ${escapeHTML(t.externalId||'
+web/app/observability.js:1302 str | xternalId||'')}">外部执行 ${escapeHTML(t.externalId||' || ')}</code>`:`<div class="obs-trace-ids"><code title="${escapeHTML(runId)}">Run ${escapeHTML(runId.slice(-12))}</code><code title="${escapeHTML(traceId)}">Trace ${escapeHTML(traceId.slice(-12))}</code></div>`;
+    const observed=(t.toolCallsSucceeded||0)+(t.toolCallsFailed||0);
+    const tools=observed?`${t.toolCallsSucceeded||0}/${observed} 成功`:(t.toolCalls?`${t.toolCalls} 次 · 结果未上报`:'
+web/app/observability.js:1341 str | , {group:'用量拆解',items:[ {key:'trend',title:'趋势明细 || ',sub:`按${grainName}；点一行查看该时段`,tables:[trendTable]},
+      {key:'
+web/app/observability.js:1356 str | tion obsCrossProjectTable(){ if(obsScope()!=='user || '||!state.obsUserFilter)return null;
+  const rows=state.obsCrossProject?.projectUsage||[];
+  if(!rows.length)return null;
+  const current=state.projectFilter;
+  const other=rows.filter(r=>r.projectId&&r.projectId!==current);
+  const totalTokens=rows.reduce((n,r)=>n+(r.tokens||0),0);
+  const here=rows.find(r=>r.projectId===current);
+  const note=other.length
+    ?`该责任人在 ${rows.length} 个项目有执
+web/app/observability.js:1407 str | =obsKpiGroups([ obsKpiGroup('交付结果',[ {label:'已交付 || ',value:String(d.delivered||0),meter:d.issues?d.delivered*100/d.issues:0,foot:`SOP 成功或对话直接交付，且已在默认分支 · ${d.issues||0} 个有执行的单${d.directIssues?`（含 ${d.directIssues} 个只在对话里改）`:'
+web/app/observability.js:1409 str | unt||0}`,foot:'按 SOP 统计标签归类，需求去重'}, {label:'PR 已合入 || ',value:String(d.mrMerged||0),meter:(d.totalMrs??d.withMr)?d.mrMerged*100/(d.totalMrs??d.withMr):0,foot:`按 PR 计数 · 默认分支；${d.mrIntegrated||0} 个已合入基线`},
+      {label:'
+web/app/observability.js:1410 str | (summary.weeklyThroughputPerUser||0).toFixed(2):'— || ',foot:`近 7 天 ${summary.weeklyDeliveredIssues||0} 个交付 / ${summary.weeklyActiveContributors||0} 人`},
+    ]),
+    obsKpiGroup('
+web/app/observability.js:1414 str | averageDurationMs?duration(d.averageDurationMs):'— || ',foot:`累计 ${formatTokens(d.totalTokens||0)} tokens`,tip:['
+web/app/observability.js:1415 str | e!=null?Number(summary.runsPerIssue).toFixed(2):'— || ',foot:`失败 ${summary.failuresPerIssue!=null?Number(summary.failuresPerIssue).toFixed(2):'
+web/app/observability.js:1415 str | ull?Number(summary.failuresPerIssue).toFixed(2):'— || '} 次/需求 · 进行中 ${summary.inProgressIssues||0} 个`},
+    ]),
+  ]);
+  return `${obsInsights(obsScopedView(),'
+web/app/observability.js:1431 str | ('funnel','交付漏斗','点一层筛选下方明细；红字为最大流失',filter!=='all || '?`<button type="button" class="obs-btn ghost" data-obs-delivery="all">清除筛选</button>`:'
+web/app/observability.js:1459 str | {const r=top[idx];if(r)obsSetDeliveryFilter('user: || '+r.id,true)}
+  },Math.max(120,top.length*30+16));
+  const table=rows.length?`<div class="obs-tw"><table class="obs-table"><thead><tr><th>负责人</th><th>已交付</th><th>进行中</th><th>未交付</th><th>平均端到端</th><th>Tokens</th><th>成本</th></tr></thead><tbody>${rows.map(r=>`<tr class="run-row${filter==='
+web/app/observability.js:1462 str | bsCard('owners','按负责人','已交付 / 进行中 / 未交付；点一人筛选明细',' || ',`<div class="obs-legend"><span><i style="background:var(--c1)"></i>已交付</span><span><i style="background:var(--c3)"></i>进行中</span><span><i style="background:var(--c4)"></i>未交付</span></div>${chart}${table}`,{expand:true});
+}
+function obsMrLabel(s){return s==='
+web/app/observability.js:1467 str | obsDirectDeliveryText(it){ if(it.delivered)return  || '对话直接交付'
+web/app/observability.js:1469 str | s(it).map(mr=>mr.state); if(!states.length)return  || '对话改代码中'
+web/app/observability.js:1470 str | es.some(s=>s==='merged'||s==='integrated'))return  || '对话 · PR 已合入'
+web/app/observability.js:1471 str |  PR 已合入'; if(states.every(s=>s==='closed'))return  || '对话 · PR 已关闭'
+web/app/observability.js:1472 str | ery(s=>s==='closed'))return '对话 · PR 已关闭'; return  || '对话 · PR 待合入'
+web/app/observability.js:1474 str | elivery?obsDirectDeliveryText(it):it.sopSucceeded? || 'SOP 成功'
+web/app/observability.js:1485 str | uration(it.cycleDurationMs):'—',it.directDelivery? || '对话'
+web/app/observability.js:1485 tpl$ | on(it.cycleDurationMs):'—',it.directDelivery?'对话': || `${it.runCount||0} 次`
+web/app/observability.js:1485 str | ostLabel(it.costCny,it.costKnown),mr,it.delivered? || '已交付'
+web/app/observability.js:1485 str | el(it.costCny,it.costKnown),mr,it.delivered?'已交付': || '未交付'
+web/app/observability.js:1487 str | "`,'run-row'); }); return {key:'deliveries',title: || '需求交付明细'
+web/app/observability.js:1487 str | key:'deliveries',title:'需求交付明细',tables:[{headers:[ || '单号'
+web/app/observability.js:1487 str | deliveries',title:'需求交付明细',tables:[{headers:['单号', || '标题'
+web/app/observability.js:1487 str | ,title:'需求交付明细',tables:[{headers:['单号','标题','SOP', || '流程'
+web/app/observability.js:1487 str | e:'需求交付明细',tables:[{headers:['单号','标题','SOP','流程', || '端到端'
+web/app/observability.js:1487 str | 付明细',tables:[{headers:['单号','标题','SOP','流程','端到端', || '执行耗时'
+web/app/observability.js:1487 str | bles:[{headers:['单号','标题','SOP','流程','端到端','执行耗时', || '周期'
+web/app/observability.js:1487 str | [{headers:['单号','标题','SOP','流程','端到端','执行耗时','周期', || '执行次数'
+web/app/observability.js:1487 str | rs:['单号','标题','SOP','流程','端到端','执行耗时','周期','执行次数', || '负责人'
+web/app/observability.js:1487 str | SOP','流程','端到端','执行耗时','周期','执行次数','负责人','Tokens', || '成本'
+web/app/observability.js:1487 str | '端到端','执行耗时','周期','执行次数','负责人','Tokens','成本','PR', || '交付'
+web/app/observability.js:1487 str | ,'交付'],rows,pageKey:all?'':'obs-deliveries',empty: || '还没有带需求上下文的运行'
+web/app/observability.js:1493 tpl$ | onst chips=OBS_DELIVERY_FILTERS.map(([id,label])=> || `<button type="button" data-obs-delivery="${id}" class="${filter===id?'active':''}">${label}<i>${items.filter(it=>obsDeliveryMatches(it,id)).length} 单</i></button>`
+web/app/observability.js:1493 tpl$ | d)).length} 单</i></button>`).join('')+(userFilter? || `<button type="button" class="active" data-obs-delivery="all" title="清除负责人筛选">${escapeHTML(obsUserName(userFilter.slice(5)))} ×</button>`
+web/app/observability.js:1495 str | f.tables[0],'','')}`; return obsCard('deliveries', || '需求交付明细'
+web/app/observability.js:1495 str | 0],'','')}`; return obsCard('deliveries','需求交付明细', || '耗时为该需求最近一次执行的端到端时间；执行耗时 = 该需求全部执行按 SOP 节点求和；周期为首次执行到最后一次执行。「已合入 / 已交付」只统计默认分支。'
+web/app/observability.js:1500 str | urrentProject(); const dim=obsScope()==='project'? || '项目'
+web/app/observability.js:1500 str | tProject(); const dim=obsScope()==='project'?'项目': || '个人'
+web/app/observability.js:1501 str | sScope()==='project'?(project?.name||project?.id|| || '当前项目'
+web/app/observability.js:1501 str | te.obsUserFilter?obsUserName(state.obsUserFilter): || '全部成员'
+web/app/observability.js:1502 str | ourceFilter?obsSourceLabel(state.obsSourceFilter): || '全部需求来源'
+web/app/observability.js:1502 str | state.obsSourceFilter):'全部需求来源')+' · '+({internal: || '平台内执行'
+web/app/observability.js:1502 str | lter):'全部需求来源')+' · '+({internal:'平台内执行',external: || '外部工作流'
+web/app/observability.js:1502 str | '平台内执行',external:'外部工作流'}[state.obsOriginFilter]|| || '全部执行'
+web/app/observability.js:1503 str | 执行'); return {project:project?.name||project?.id|| || '全部项目'
+web/app/observability.js:1506 tpl$ | sReportTable(title,headers,rows){ if(!rows)return  || `<section class="block"><h2>${title}</h2><p class="empty">暂无数据</p></section>`
+web/app/observability.js:1511 str | n exportObsReport(){ ensureObsUserFilter(); toast( || '正在生成报告…'
+web/app/observability.js:1523 tpl$ | 10); a.href=URL.createObjectURL(blob); a.download= || `LoopForge用量报告-${scope.project}-${scope.who}-${stamp}.html`
+web/app/observability.js:1526 str | eout(()=>URL.revokeObjectURL(a.href),1500); toast( || '已导出 HTML 报告'
+web/app/observability.js:1527 str | t('已导出 HTML 报告','ok'); }catch(e){toast(e.message|| || '导出失败'
+web/app/observability.js:1542 tpl$ | te.analytics?.deliveries||[]).slice(0,80).map(it=> || `<tr><td>${obsSourceLabel(it.source)} ${escapeHTML(String(it.externalIid?('#'+it.externalIid):(it.externalId||it.issueId)))}</td><td>${escapeHTML(it.title||it.issueId)}</td><td>${escapeHTML(it.workflowName||it.workflowId)}</td><td>${escapeHTML(obsDeliveryStatusText(it))}</td><td>${escapeHTML(obsUserName(it.userId))}</td><td>${formatTokens(it.tokens)}</td><td>${obsPlain(costLabel(it.costCny,it.cost
+web/app/observability.js:1545 str | tr>`).join(''); const kpis=[ ...(activity?[ [ || '会话数'
+web/app/observability.js:1545 str | is=[ ...(activity?[ ['会话数',activity.sessions||0, || '普通对话 · 按创建时间'
+web/app/observability.js:1546 str |  ['会话数',activity.sessions||0,'普通对话 · 按创建时间'], [ || '创建需求'
+web/app/observability.js:1546 str | '普通对话 · 按创建时间'], ['创建需求',activity.requirements||0, || '按需求 ID 去重 · 含同步需求'
+web/app/observability.js:1547 str | ',activity.requirements||0,'按需求 ID 去重 · 含同步需求'], [ || '需求 SOP'
+web/app/observability.js:1547 str | 需求 ID 去重 · 含同步需求'], ['需求 SOP',activity.sopRuns||0, || '顶层需求 SOP 执行次数'
+web/app/observability.js:1548 str |  ['需求 SOP',activity.sopRuns||0,'顶层需求 SOP 执行次数'], [ || '多人协作会话'
+web/app/observability.js:1548 tpl$ | tivity.collaborativeSessions||0,activity.sessions? || `占会话 ${(Number(activity.collaborativeSessions||0)*100/activity.sessions).toFixed(1)}% · 至少两位用户发言`
+web/app/observability.js:1548 str | )*100/activity.sessions).toFixed(1)}% · 至少两位用户发言`: || '暂无会话'
+web/app/observability.js:1551 str | turn [card.label,card.value,card.foot]}), ]:[]), [ || '运行'
+web/app/observability.js:1551 tpl$ | e,card.foot]}), ]:[]), ['运行',summary.totalRuns||0, || `${summary.activeRuns||0} 进行中`
+web/app/observability.js:1552 str | ry.totalRuns||0,`${summary.activeRuns||0} 进行中`], [ || '成功率'
+web/app/observability.js:1552 tpl$ | ummary.totalRuns?percent(summary.successRate):'—', || `${summary.succeededRuns||0} 成功 / ${summary.failedRuns||0} 失败`
+web/app/observability.js:1553 str | ededRuns||0} 成功 / ${summary.failedRuns||0} 失败`], [ || '一次通过'
+web/app/observability.js:1553 tpl$ | mary.totalRuns?percent(summary.firstPassRate):'—', || `${summary.reworkedRuns||0} 次返工`
+web/app/observability.js:1554 tpl$ | 次返工`], ['Token',formatTokens(summary.totalTokens), || `入 ${formatTokens(summary.inputTokens)} / 出 ${formatTokens(summary.outputTokens)}`
+web/app/observability.js:1555 str | s)} / 出 ${formatTokens(summary.outputTokens)}`], [ || '成本'
+web/app/observability.js:1555 tpl$ | ary.costUnknownRuns===0)),summary.costUnknownRuns? || `${summary.costUnknownRuns} 次未识别`
+web/app/observability.js:1555 str | costUnknownRuns?`${summary.costUnknownRuns} 次未识别`: || '已识别'
+web/app/observability.js:1556 str | wnRuns?`${summary.costUnknownRuns} 次未识别`:'已识别'], [ || '缓存命中'
+web/app/observability.js:1556 tpl$ | umber(summary.cacheHitRate||0).toFixed(0)+'%':'—', || `缓存读 ${formatTokens(summary.cacheReadTokens||0)}`
+web/app/observability.js:1557 str | 读 ${formatTokens(summary.cacheReadTokens||0)}`], [ || 'P95 执行'
+web/app/observability.js:1557 tpl$ | urationMs):'—',summary.executionAverageDurationMs? || `平均 ${duration(summary.executionAverageDurationMs)}`
+web/app/observability.js:1558 str | tion(summary.executionAverageDurationMs)}`:'—'], [ || '对话改代码'
+web/app/observability.js:1558 tpl$ | mary.executionAverageDurationMs)}`:'—'], ['对话改代码', || `${summary.conversationIssues||0} 个需求`
+web/app/observability.js:1558 tpl$ | , ['对话改代码',`${summary.conversationIssues||0} 个需求`, || `${summary.conversationWorkspaces||0} 个工作区 · ${formatTokens(summary.conversationTokens||0)} · ${obsPlain(costLabel(summary.conversationCostCny||0,true))}`
+web/app/observability.js:1559 str | tLabel(summary.conversationCostCny||0,true))}`], [ || '已交付'
+web/app/observability.js:1559 tpl$ | sationCostCny||0,true))}`], ['已交付',d.delivered||0, || `${d.issues||0} 个有执行的单`
+web/app/observability.js:1560 str |  ['已交付',d.delivered||0,`${d.issues||0} 个有执行的单`], [ || 'PR 已合入'
+web/app/observability.js:1560 tpl$ | `${d.issues||0} 个有执行的单`], ['PR 已合入',d.mrMerged||0, || `${d.mrIntegrated||0} 已合入基线`
+web/app/observability.js:1562 tpl$ | ><small>${f}</small></article>`).join(''); return  || `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHTML(scope.project)} 用量报告</title>
+<style>
+:root{--text:#152033;--muted:#5b6b82;--line:#e6ebf3;--bg:#f5f7fb;--card:#fff;--blue:#3b6cff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.55 -apple-system,BlinkMacSys
+web/app/observability.js:1603 str | project=currentProject();if(!project)return toast( || '请先选择项目'
+web/app/observability.js:1608 tpl$ | ion>`).join(''); dialog.setAttribute('aria-label', || `${project.name} · 外部数据源`
+web/app/observability.js:1609 tpl$ | bel',`${project.name} · 外部数据源`); dialog.innerHTML= || `<header class="obs-source-head">${obsIcon('integration',16)}<h3>${escapeHTML(project.name)} · 外部数据源</h3><button class="obs-icon-btn" data-close type="button" title="关闭" aria-label="关闭">${obsIcon('close')}</button></header><div class="obs-source-body"><p>为外部工作流创建专用上报凭据。Token 仅在创建时显示，可随时撤销。</p><div data-sources>正在加载…</div><form data-create><label class="field">数据源名称<input name="name" required maxle
+web/app/observability.js:1620 tpl$ | ta-sources]').innerHTML=items.length?items.map(s=> || `<div class="obs-source-row obs-source-item">${obsIcon('key')}<span><b>${escapeHTML(s.name)}</b><code>${escapeHTML(s.tokenPrefix)}</code><em>${s.revokedAt?'已撤销':new Date(s.expiresAt)<=new Date()?'已过期':'有效至 '+new Date(s.expiresAt).toLocaleDateString()}</em></span>${s.revokedAt?'':`
+web/app/observability.js:1620 str | icon-btn" data-revoke="${escapeHTML(s.id)}" title= || "撤销"
+web/app/observability.js:1620 str | evoke="${escapeHTML(s.id)}" title="撤销" aria-label= || "撤销 ${escapeHTML(s.name)}"
+web/app/observability.js:1620 str | ">${obsIcon('trash')}</button>`}</div>`).join(''): || '<p class="muted">尚无外部数据源</p>'
+web/app/observability.js:1627 tpl$ | source-row';row.dataset.mapping=''; row.innerHTML= || `<input required maxlength="128" placeholder="外部账号" aria-label="外部账号"><span class="obs-source-pick"><select required data-obs-select data-icon="user" aria-label="平台责任人"><option value="">选择责任人</option>${options}</select></span><button type="button" class="obs-icon-btn" title="移除" aria-label="移除责任人映射">${obsIcon('trash')}</button>`
+web/app/observability.js:1640 str | dialog.querySelector('[data-token]').value);toast( || 'Token 已复制'
+web/app/observability.js:1640 str | token]').value);toast('Token 已复制')}catch(e){toast( || '请手动复制 Token'
+web/app/observability.js:1643 str | key||Object.hasOwn(userMappings,key))return toast( || '外部账号不能为空或重复'

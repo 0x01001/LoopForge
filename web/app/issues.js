@@ -87,7 +87,7 @@ function renderIssueAssigneeFilter(projectIssues=[]){
     });
   });
   const owns=(i,id)=>String(i.assigneeUserId)===id||String(i.assigneeId)===id||(i.sopBindings||[]).some(b=>String(b.assigneeUserId)===id);
-  const meta=n=>n?` data-meta="${n} 条"`:'';
+  const meta=n=>n?` data-meta="${window.lfT(`${n} 条`, `${n}`)}`:'';
   const unassigned=projectIssues.filter(i=>!i.assigneeUserId&&!i.assigneeId&&!(i.sopBindings||[]).some(b=>b.assigneeUserId)).length;
   let html=`<option value="">全部责任人</option><option value="unassigned"${meta(unassigned)}${current==='unassigned'?' selected':''}>未指定责任人</option>`;
   for(const [id, label] of userMap.entries()){
@@ -157,7 +157,7 @@ function renderIssues(){
   const emptyTitle=state.issueRunFilter==='attention'?'没有需要介入的工作项':state.issueRunFilter==='mr'?'没有待处理 MR 的需求':'当前项目没有匹配的工作项';
   const emptyHint=state.issueRunFilter==='attention'?'待确认澄清结论、门禁失败、运行失败或已中断的工作项会显示在这里。':state.issueRunFilter==='mr'?'已提 MR 但还没合入的需求会显示在这里。':'从 GitHub 同步，或在本平台新建需求。';
   const keyWidth=issueKeyColumnWidth(paged.items);
-  const pager=pagerHTML('issues',paged)||(paged.total?`<nav class="pager pager-summary" aria-label="分页"><span class="pager-meta">共 ${paged.total} 条</span></nav>`:'');
+  const pager=pagerHTML('issues',paged)||(paged.total?`<nav class="pager pager-summary" aria-label="分页"><span class="pager-meta">${window.lfT(`共 ${paged.total} 条`, `${paged.total} total`)}</span></nav>`:'');
   board.innerHTML=`<div class="issue-table-card"><div class="issue-table-scroll"><div class="issue-table${state.issueSelectionMode?' issue-table-selectable':''}" data-page-anchor="issues" style="--issue-col-key:${keyWidth}"><div class="issue-table-row issue-table-head" role="row">${state.issueSelectionMode?`<div class="issue-select-cell">${issueSelectAllCheckbox('全选本页可删除的需求')}</div>`:''}<span>编号</span><span>标题</span><span>来源</span><span>责任人</span><span>仓库</span><span>优先级</span><span>关联 SOP</span><span>当前环节</span><span>进度</span><span>操作</span></div><div class="issue-table-body">${paged.items.map(issueRow).join('')||`<div class="issue-table-empty">${huiIcon('search')}<b>${emptyTitle}</b><p>${emptyHint}</p></div>`}</div></div></div>${pager}</div>`;
   $$('.issue-table-row[data-id]').forEach(el=>el.onclick=()=>openIssueDetail(el.dataset.id));
   bindIssueRowActions(board);
@@ -278,7 +278,7 @@ function issueSourceMarkup(i){
   const s=metricsIssueSource(i)||'local';
   const tone=s==='github'?'github':s==='gongfeng'?'gongfeng':s==='tapd'?'tapd':'local';
   const label=issueSourceLabel(i);
-  return `<span class="issue-source-chip tone-${tone}" title="需求来源：${escapeHTML(label)}">${escapeHTML(label)}</span>`;
+  return `<span class="issue-source-chip tone-${tone}" title="${escapeHTML(window.lfT(`需求来源：${label}`,`Source: ${label}`))}">${escapeHTML(label)}</span>`;
 }
 // 与顶栏、项目成员保持一致：复用统一头像组件（真实头像 + 首字回退），不再自绘姓氏。
 function issueOwnerAvatar(i){
@@ -379,7 +379,7 @@ function issueListProgress(i,run,w){
   return raw;
 }
 function issueRow(i){
-  const {project:p,run,workflow:w}=issueExecution(i),boundRepos=(state.data.repositories||[]).filter(x=>(i.repositoryIds||[]).includes(x.id)||x.id===i.repositoryId||(!((i.repositoryIds||[]).length||i.repositoryId)&&x.id===p?.defaultRepositoryId)),issueRepos=[boundRepos.find(x=>x.id===i.repositoryId),...boundRepos.filter(x=>x.id!==i.repositoryId)].filter(Boolean),repo=issueRepos[0],repoLabel=issueRepos.length>1?`${repo?.name||'未绑定'} 等${issueRepos.length}个`:repo?.name||'未绑定',health=issueRunHealth(i),stage=issueCurrentStage(i),progress=issueListProgress(i,run,w);
+  const {project:p,run,workflow:w}=issueExecution(i),boundRepos=(state.data.repositories||[]).filter(x=>(i.repositoryIds||[]).includes(x.id)||x.id===i.repositoryId||(!((i.repositoryIds||[]).length||i.repositoryId)&&x.id===p?.defaultRepositoryId)),issueRepos=[boundRepos.find(x=>x.id===i.repositoryId),...boundRepos.filter(x=>x.id!==i.repositoryId)].filter(Boolean),repo=issueRepos[0],repoName=repo?.name||'未绑定',repoLabel=issueRepos.length>1?window.lfT(`${repoName} 等${issueRepos.length}个`, `${repo?.name||'Not bound'} and ${issueRepos.length-1} more`):repoName,health=issueRunHealth(i),stage=issueCurrentStage(i),progress=issueListProgress(i,run,w);
   const sop=issueSOPLabel(i);
   const laneDots=issueLaneDots(i);
   const convo=conversationIssueProgress(i,run);
@@ -398,7 +398,7 @@ function issueRow(i){
     progressText='失败';
     progressCls=' fail';
     trackWidth=0;
-    progressTitle=`门禁或脚本执行失败（${progress.done}/${progress.total||0} 节点）`;
+    progressTitle=window.lfT(`门禁或脚本执行失败（${progress.done}/${progress.total||0} 节点）`,`A gate or script failed (${progress.done}/${progress.total||0} steps)`);
   }else if(needsConfirm){
     progressText='需要确认结论';
     progressCls=' confirm';
@@ -448,7 +448,7 @@ function updateIssueBaseBranchInput(input,hint,repositoryIds){
   input.dataset.repositoryIds=ids;
   input.disabled=repos.length!==1;
   const mainBranch=repos.length===1?repos[0].defaultBranch:'';
-  input.placeholder=mainBranch?`留空从主分支 ${mainBranch} 新建`:'留空从各仓库配置的主分支新建';
+  input.placeholder=mainBranch?window.lfT(`留空从主分支 ${mainBranch} 新建`,`Leave blank to create from ${mainBranch}`):'留空从各仓库配置的主分支新建';
   if(hint)hint.textContent=repos.length!==1?'指定继续开发分支时请选择一个仓库；留空从各仓库配置的主分支分别新建工作分支。':'留空从配置主分支新建工作分支；填写时直接继续该已有分支，不新建。';
 }
 function refreshIssueBaseBranchInput(){
@@ -469,7 +469,7 @@ function renderIssueRepositoryBranchInputs(input,hint,host,repositoryIds,branche
   input.hidden=repos.length>1;
   if(repos.length===1)input.value=branches[repos[0].id]||'';
   host.hidden=repos.length<2;
-  host.innerHTML=repos.length<2?'':repos.map(repo=>`<label class="repository-branch-row"><span>${escapeHTML(repo.name)}</span><input class="input" data-repository-branch="${escapeHTML(repo.id)}" aria-label="${escapeHTML(repo.name)} 的继续开发分支" value="${escapeHTML(branches[repo.id]||'')}" placeholder="${escapeHTML(repo.defaultBranch?`留空从主分支 ${repo.defaultBranch} 新建`:'留空从配置主分支新建')}" autocomplete="off"></label>`).join('');
+  host.innerHTML=repos.length<2?'':repos.map(repo=>`<label class="repository-branch-row"><span>${escapeHTML(repo.name)}</span><input class="input" data-repository-branch="${escapeHTML(repo.id)}" aria-label="${escapeHTML(repo.name)} 的继续开发分支" value="${escapeHTML(branches[repo.id]||'')}" placeholder="${escapeHTML(repo.defaultBranch?window.lfT(`留空从主分支 ${repo.defaultBranch} 新建`,`Leave blank to create from ${repo.defaultBranch}`):'留空从配置主分支新建')}" autocomplete="off"></label>`).join('');
   if(repos.length>1&&hint)hint.textContent='分别填写各仓库的已有功能分支，直接继续开发；留空的仓库从各自配置的主分支新建工作分支。';
 }
 function fillIssueAssignees(projectId,value=''){
@@ -687,7 +687,7 @@ async function importTAPDStory(e){
     if(idx>=0)state.data.issues[idx]=issue;else (state.data.issues||(state.data.issues=[])).unshift(issue);
     $('#importTAPDModal').classList.remove('open');
     renderIssues();
-    toast(`已导入 TAPD 工作项：${issue.title||issue.id}`,'ok');
+    toast(window.lfT(`已导入 TAPD 工作项：${issue.title||issue.id}`,`Imported TAPD work item: ${issue.title||issue.id}`),'ok');
     if(issue.id)openIssueDetail(issue.id);
   }catch(err){toast(err.message)}
   finally{if(button){button.disabled=false;button.textContent='导入'}}
@@ -918,7 +918,8 @@ function afRerunFromNode(run,nodeId){
   if(!node){toast('这个节点现在不能从这里重跑');return Promise.resolve(null)}
   return afOpenDialog(()=>{
     $('#confirmTitle').textContent='从这里重跑';
-    $('#confirmMessage').textContent=`从「${node.name}」及其下游重跑，上游已完成的步骤会保留。${run.workspaceCleanedAt&&!String(run.workspaceCleanedAt).startsWith('0001-')?'工作区已回收：优先恢复已有快照；没有快照时重新准备仓库和已归档的上游产物，未保存的历史文件无法恢复。':''}`;
+    const rerunExtra=run.workspaceCleanedAt&&!String(run.workspaceCleanedAt).startsWith('0001-')?'工作区已回收：优先恢复已有快照；没有快照时重新准备仓库和已归档的上游产物，未保存的历史文件无法恢复。':'';
+    $('#confirmMessage').textContent=window.lfT(`从「${node.name}」及其下游重跑，上游已完成的步骤会保留。${rerunExtra}`,`Rerun from "${node.name}" and downstream. Completed upstream steps are kept.${rerunExtra?' The workspace was reclaimed: an existing snapshot is restored when there is one; otherwise the repository and archived upstream outputs are prepared again. Unsaved historical files cannot be recovered.':''}`);
     fields.hidden=false;
     context.value='';
     const allowsContext=runNodeAllowsContext(node);

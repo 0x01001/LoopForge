@@ -19,7 +19,7 @@ function issueDeletionContextHTML(issue,{menu=false}={}){
   const block=issueDeletionBlock(issue);
   if(!block)return '';
   const label=block.code==='clarifying'?'查看澄清':block.runId?'查看相关运行':block.code==='active'||block.code==='succeeded'?'查看任务与记录':'查看需求详情';
-  return `<button type="button" class="${menu?'issue-popover-item':'button ghost small'}" data-issue-deletion-context="${escapeHTML(issue.id)}" aria-label="${escapeHTML(`${label}：${issue.title||issue.id}，${block.reason}`)}">${menu?huiIcon('arrow-right','popover-icon'):''}${label}</button>`;
+  return `<button type="button" class="${menu?'issue-popover-item':'button ghost small'}" data-issue-deletion-context="${escapeHTML(issue.id)}" aria-label="${escapeHTML(window.lfT(`${label}：${issue.title||issue.id}，${block.reason}`,`${label}: ${issue.title||issue.id}. ${block.reason}`))}">${menu?huiIcon('arrow-right','popover-icon'):''}${label}</button>`;
 }
 function issueDeleteControlHTML(issue,{menu=false}={}){
   const block=issueDeletionBlock(issue),cls=menu?'issue-popover-item':'button ghost small';
@@ -300,7 +300,7 @@ function issueActor(i){
   const live=currentRunNode(i);
   const bound=(state.data.agents||[]).find(x=>x.id===i.assigneeId);
   if(live?.nodeRun?.status==='waiting_approval')return{kind:'waiting',title:'待你审批',sub:live.def?.name||'人工门禁'};
-  if(live?.nodeRun?.status==='failed')return{kind:'attention',title:'需要介入',sub:`${live.def?.name||'当前节点'} · 门禁失败`};
+  if(live?.nodeRun?.status==='failed')return{kind:'attention',title:'需要介入',sub:window.lfT(`${live.def?.name||'当前节点'} · 门禁失败`,`${live.def?.name||'Current step'} · gate failed`)};
   if(live?.nodeRun?.status==='running')return{kind:'active',title:live.agent?.name||'Agent 执行中',sub:live.def?.name||'运行中'};
   if(issueClarifying(i.id))return{kind:'active',title:'澄清分析中',sub:'关闭网页也不会中断'};
   const task=latestIssueTask(i);
@@ -318,11 +318,11 @@ function issueOutcome(i){
   if(clarificationNeedsConfirm(i)){
     return{key:'confirm',short:'待确认',title:'请确认澄清结论并写回原单',body:'结论已追加到平台说明。确认写回原单（追加评论）后，即可开始触发需求执行 SOP。'};
   }
-  if(conversationWorkspaceIssue(i)){const c=conversationIssueStage(i);return{key:c.ended?'idle':c.key==='closed'?'closed':'active',short:c.short,title:`对话交付 · ${c.label}`,body:c.hint};}
+  if(conversationWorkspaceIssue(i)){const c=conversationIssueStage(i);return{key:c.ended?'idle':c.key==='closed'?'closed':'active',short:c.short,title:window.lfT(`对话交付 · ${c.label}`,`Conversation delivery · ${c.label}`),body:c.hint};}
   if(latestIssueRun(i)?.status==='cancelled')return{key:'attention',short:'已取消',title:'运行已取消',body:'这次运行已结束且工作区已清理，不能接着原记录重试。可以重新触发整条 SOP。'};
-  if(health==='attention')return{key:'attention',short:'失败',title:'运行失败',body:`停在「${stage.label}」。可从失败节点重试，或整条重新触发。`};
-  if(stage.key==='waiting')return{key:'waiting',short:'待确认',title:'等待确认',body:`「${stage.label}」需要批准后才会继续。`};
-  if(health==='active')return{key:'active',short:'进行中',title:'进行中',body:`当前在「${stage.label}」。`};
+  if(health==='attention')return{key:'attention',short:'失败',title:'运行失败',body:window.lfT(`停在「${stage.label}」。可从失败节点重试，或整条重新触发。`,`Stopped at "${stage.label}". Retry the failed step, or rerun the whole SOP.`)};
+  if(stage.key==='waiting')return{key:'waiting',short:'待确认',title:'等待确认',body:window.lfT(`「${stage.label}」需要批准后才会继续。`,'"'+stage.label+'" needs approval before it continues.')};
+  if(health==='active')return{key:'active',short:'进行中',title:'进行中',body:window.lfT(`当前在「${stage.label}」。`,`Currently at "${stage.label}".`)};
   if(health==='closed')return{key:'closed',short:'已完成',title:'已完成',body:'全部节点已通过。结果不对可以重新触发整条，或点某个节点从那里重跑。'};
   return{key:'idle',short:'未开始',title:'尚未执行',body:'触发后会按 SOP 执行。未绑定仓库时会先确认绑定。'};
 }
@@ -366,7 +366,7 @@ function deliveryMRButtons(issue,{cls='button ghost small'}={}){
   return list.map(mr=>{
     const iid=mr.iid||String(mr.url).match(/merge_requests\/(\d+)/)?.[1]||'';
     const repo=mr.repository||String(mr.project||'').split('/').pop();
-    const label=list.length>1?`打开 MR · ${repo||'仓库'}${iid?` !${iid}`:''}`:'打开 MR';
+    const label=list.length>1?window.lfT(`打开 MR · ${repo||'仓库'}${iid?` !${iid}`:''}`,`Open MR · ${repo||'repository'}${iid?` !${iid}`:''}`):'打开 MR';
     const st=deliveryMRStateText[String(mr.state||'').toLowerCase()];
     return `<a class="${cls}" href="${escapeHTML(safeURL(mr.url))}" target="_blank" rel="noopener noreferrer" title="${escapeHTML([mr.project,st].filter(Boolean).join(' · ')||mr.url)}">${escapeHTML(label)} ↗</a>`;
   }).join('');
@@ -610,11 +610,11 @@ function issueLaneStage(i){
   const lanes=clientIssueLanes(i).filter(l=>l.started);
   if(lanes.length<2)return null;
   const attn=lanes.find(l=>l.status==='attention');
-  if(attn)return{key:'attention',label:`失败 · ${attn.label}`,hint:`${attn.label}需要介入`};
+  if(attn)return{key:'attention',label:window.lfT(`失败 · ${attn.label}`,`Failed · ${attn.label}`),hint:window.lfT(`${attn.label}需要介入`,`${attn.label} needs attention`)};
   const wait=lanes.find(l=>l.status==='waiting');
-  if(wait)return{key:'waiting',label:`${wait.label}待确认`,hint:`${wait.label}等待人工判断`};
+  if(wait)return{key:'waiting',label:window.lfT(`${wait.label}待确认`,`${wait.label} needs confirmation`),hint:window.lfT(`${wait.label}等待人工判断`,`${wait.label} is waiting for a decision`)};
   const active=lanes.find(l=>l.status==='active');
-  if(active)return{key:'active',label:`${active.label}进行中`,hint:`${active.label}正在执行`};
+  if(active)return{key:'active',label:window.lfT(`${active.label}进行中`,`${active.label} in progress`),hint:window.lfT(`${active.label}正在执行`,`${active.label} is running`)};
   if(lanes.every(l=>l.status==='succeeded'||l.status==='closed'))return{key:'closed',label:'交付闭环',hint:'已跑过的泳道均已通过'};
   return{key:'active',label:lanes.map(l=>l.label).join(' / '),hint:'多条 SOP 并行'};
 }
@@ -681,9 +681,9 @@ function issueCurrentStage(i){
   const current=entries.find(([,n])=>n.status==='failed')||entries.find(([,n])=>n.status==='waiting_approval')||entries.find(([,n])=>n.status==='running')||entries.find(([,n])=>n.status==='pending_input')||entries.find(([,n])=>n.status==='cancelled');
   if(current){
     const [id,node]=current,name=byID.get(id)?.name||id;
-    if(node.status==='failed')return{key:'attention',label:`失败 · ${name}`,hint:String(node.error||'门禁失败').slice(0,120)};
+    if(node.status==='failed')return{key:'attention',label:window.lfT(`失败 · ${name}`,`Failed · ${name}`),hint:String(node.error||'门禁失败').slice(0,120)};
     if(node.status==='waiting_approval')return{key:'waiting',label:name,hint:'等待人工判断'};
-    if(node.status==='cancelled')return{key:'attention',label:`已取消 · ${name}`,hint:'可重新触发整条 SOP，不能接着这次运行重试'};
+    if(node.status==='cancelled')return{key:'attention',label:window.lfT(`已取消 · ${name}`,`Cancelled · ${name}`),hint:'可重新触发整条 SOP，不能接着这次运行重试'};
     if(node.status==='running'||node.status==='pending_input'){
       const hint=ghost?'运行状态已失效，但节点仍在执行，建议取消':String(node.activity||'Agent 正在执行');
       return{key:'active',label:name,hint};

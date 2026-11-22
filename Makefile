@@ -1,4 +1,4 @@
-.PHONY: run test test-mysql clean-mysql build build-chatbot build-gate-mcp coverage coverage-go coverage-chatbot coverage-web coverage-e2e
+.PHONY: run test test-mysql clean-mysql build build-chatbot build-gate-mcp coverage coverage-go coverage-chatbot coverage-web coverage-e2e release
 
 GOCACHE ?= /tmp/agentflow-gocache
 # Use the local toolchain; go.mod requires go >= 1.26.11.
@@ -70,3 +70,14 @@ build-gate-mcp:
 	CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 GOCACHE=$(GOCACHE) go build -o bin/agentflow-gate-mcp-darwin-arm64 ./cmd/agentflow-gate-mcp
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOCACHE=$(GOCACHE) go build -o bin/agentflow-gate-mcp-linux-amd64 ./cmd/agentflow-gate-mcp
 	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 GOCACHE=$(GOCACHE) go build -o bin/agentflow-gate-mcp-linux-arm64 ./cmd/agentflow-gate-mcp
+
+# release rebuilds this checkout and swaps the server into the running platform container.
+ifeq ($(OS),Windows_NT)
+# Use Git Bash, not the Windows system Bash launcher for WSL.
+RELEASE_BASH ?= $(subst \,/,$(or $(ProgramW6432),$(ProgramFiles)))/Git/bin/bash.exe
+else
+RELEASE_BASH ?= bash
+endif
+
+release:
+	"$(RELEASE_BASH)" scripts/release-container.sh

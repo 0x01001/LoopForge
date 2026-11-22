@@ -58,7 +58,7 @@ async function openIssueDetail(id,tab){
       restoreIssueClarifyThinking(issueId);
       attachIssueClarifyStream(issueId);
     }
-  }catch(e){$('#issueDetailBody').innerHTML=`<div class="detail-empty">加载失败：${escapeHTML(e.message)}</div>`}
+  }catch(e){$('#issueDetailBody').innerHTML=`<div class="detail-empty">${escapeHTML(window.lfT(`加载失败：${e.message}`,`Failed to load: ${e.message}`))}</div>`}
 }
 function issueClarifyViewKey(issue,project){
   const c=issue?.clarification||{};
@@ -238,7 +238,7 @@ function clarificationOverviewCard(issue){
     const failed=c.writeBackStatus==='failed';
     const pending=c.writeBackStatus==='pending';
     const cls=failed||pending?'failed':'ready';
-    const title=failed?'澄清已完成，写回失败':pending?'澄清已完成，待确认写回':`已澄清 · ${c.writeBackStatus==='succeeded'?`已写回 ${source}`:'结论已保存'}`;
+    const title=failed?'澄清已完成，写回失败':pending?'澄清已完成，待确认写回':window.lfT(`已澄清 · ${c.writeBackStatus==='succeeded'?`已写回 ${source}`:'结论已保存'}`,`Clarified · ${c.writeBackStatus==='succeeded'?`Written back to ${source}`:'Conclusion saved'}`);
     return `<div class="clarify-overview ${cls}"><span>${failed||pending?'!':'✓'}</span><div><b>${title}</b><small>${escapeHTML((c.summary||'').slice(0,120))}${c.summary&&c.summary.length>120?'…':''}</small></div><button class="button ghost small" data-start-clarify>查看</button></div>`;
   }
   if(c.status==='in_progress'){
@@ -349,7 +349,7 @@ async function attachIssueClarifyStream(issueId){
       if(current?.stopping)toast('已停止本轮澄清');
       return;
     }
-    toast(`澄清失败：${err.message}`,'err');
+    toast(window.lfT(`澄清失败：${err.message}`,`Clarification failed: ${err.message}`),'err');
     setIssueClarifyLastError(issueId,err.message);
   }finally{
     finishIssueClarifyJob(issueId,abort);
@@ -436,7 +436,7 @@ async function sendIssueClarification(initialMessage=''){
       if(current?.stopping)toast('已停止本轮澄清');
       return;
     }
-    toast(`澄清失败：${err.message}`,'err');
+    toast(window.lfT(`澄清失败：${err.message}`,`Clarification failed: ${err.message}`),'err');
     setIssueClarifyLastError(issueId,err.message);
   }finally{
     finishIssueClarifyJob(issueId,abort);
@@ -451,7 +451,7 @@ async function retryIssueClarificationWriteBack(){
     if(idx>=0)state.data.issues[idx]=updated;
     renderIssueDetailTab();
     renderIssues();
-    toast(updated.clarification?.writeBackStatus==='succeeded'?'已写回原单评论，现在可以触发需求了！':updated.clarification?.writeBackStatus==='pending'?'结论已保存，尚未写回原单':`写回仍未成功：${updated.clarification?.writeBackError||'未知错误'}`,updated.clarification?.writeBackStatus==='succeeded'?'ok':'err');
+    toast(updated.clarification?.writeBackStatus==='succeeded'?'已写回原单评论，现在可以触发需求了！':updated.clarification?.writeBackStatus==='pending'?'结论已保存，尚未写回原单':window.lfT(`写回仍未成功：${updated.clarification?.writeBackError||'未知错误'}`,`Write-back still failed: ${updated.clarification?.writeBackError||'Unknown error'}`),updated.clarification?.writeBackStatus==='succeeded'?'ok':'err');
   }catch(e){toast(e.message,'err')}
 }
 async function closeIssueById(issueId){
@@ -461,7 +461,7 @@ async function closeIssueById(issueId){
   if(!issueCanClose(issue))return toast('需求正在澄清或执行 SOP，请先停止后再关闭','err');
   const ok=await afConfirm({
     title:'手动关闭需求',
-    message:`确定手动关闭需求「${issue.title||issue.id}」？关闭后可在状态里筛「已关闭」。`,
+    message:window.lfT(`确定手动关闭需求「${issue.title||issue.id}」？关闭后可在状态里筛「已关闭」。`,`Close requirement "${issue.title||issue.id}" manually? You can filter Closed afterward.`),
     confirmText:'确认关闭'
   });
   if(!ok)return;
@@ -559,12 +559,12 @@ function clarifyHistoryHTML(c){
     }
   });
   if(!rows.length)return'';
-  return `<details class="clarify-history"><summary>澄清过程（${rows.length} 条）</summary><div class="clarify-turns">${rows.join('')}</div></details>`;
+  return `<details class="clarify-history"><summary>${window.lfT(`澄清过程（${rows.length} 条）`,`Clarification history (${rows.length})`)}</summary><div class="clarify-turns">${rows.join('')}</div></details>`;
 }
 function clarifyPane(issue,project){
   const c=recoverClarifyView(issue.clarification||{}),source=issue.source==='gongfeng'?'工蜂 Issue':issue.source==='tapd'?'TAPD 需求':'工作项';
   if(c.status==='ready'&&submittedClarifyDraft?.issueId===issue.id)submittedClarifyDraft=null;
-  const writeBack=c.writeBackStatus==='succeeded'?`已写回 ${source}`:c.writeBackStatus==='failed'?'写回失败':c.writeBackStatus==='skipped'?'仅保存到 LoopForge':'';
+  const writeBack=c.writeBackStatus==='succeeded'?window.lfT(`已写回 ${source}`,`Written back to ${source}`):c.writeBackStatus==='failed'?'写回失败':c.writeBackStatus==='skipped'?'仅保存到 LoopForge':'';
   if(c.status==='ready'&&c.summary){
     const pending=c.writeBackStatus==='pending'&&(issue.source==='tapd'||issue.source==='gongfeng')&&issue.externalRef;
     const retry=c.writeBackStatus==='failed'?`<button class="button primary small" data-retry-clarify>重试写回原单</button>`:'';
@@ -575,7 +575,7 @@ function clarifyPane(issue,project){
     const stepGuide=pending?`<div class="clarify-next-step-callout"><div class="clarify-step-badge active"><span class="step-num">1</span><span>确认写回原单（追加评论）</span></div><span class="clarify-step-arrow">➔</span><div class="clarify-step-badge"><span class="step-num">2</span><span>触发需求执行 SOP</span></div></div>`:'';
     const head=pending
       ?`<div class="clarify-ready-head"><span class="clarify-check warn">!</span><div><b>请确认澄清结论并写回原单</b><small>结论已追加到平台说明。确认写回原单（追加评论）后，即可开始触发需求执行 SOP（不会修改原单描述）</small></div></div>${stepGuide}`
-      :`<div class="clarify-ready-head"><span class="clarify-check">✓</span><div><b>澄清已完成${c.writeBackStatus==='succeeded'?` · 已写回 ${source} 评论`:''}</b><small class="${c.writeBackStatus==='failed'?'danger':''}">${escapeHTML(writeBack||'结论已保存到平台说明')}，可直接触发需求执行 SOP</small></div></div>`;
+      :`<div class="clarify-ready-head"><span class="clarify-check">✓</span><div><b>${c.writeBackStatus==='succeeded'?window.lfT(`澄清已完成 · 已写回 ${source} 评论`,`Clarification done · written back to ${source}`):'澄清已完成'}</b><small class="${c.writeBackStatus==='failed'?'danger':''}">${escapeHTML(writeBack||'结论已保存到平台说明')}，可直接触发需求执行 SOP</small></div></div>`;
     const actionTip=pending
       ?`<div class="clarify-action-hint">确认写回原单（追加评论）后，即可开始触发需求</div>`
       :(trigger?`<div class="clarify-action-hint ok">可直接点击「触发需求」开始执行</div>`:'');
@@ -728,10 +728,10 @@ function conversationRepoCards(issue,data){
     const root=safeURL(String(c.webUrl||'').trim().replace(/\.git$/,'').replace(/\/+$/,''));
     const ns=c.path&&lower(c.path).endsWith(`/${lower(c.name)}`)?c.path.slice(0,-c.name.length):'';
     const nameHTML=`${ns?`<span>${escapeHTML(ns)}</span>`:''}<b>${escapeHTML(c.name)}</b>`;
-    const name=root&&root!=='#'?`<a class="conv-repo-name" href="${escapeHTML(root)}" ${newTab} title="在${platform}打开仓库 ${escapeHTML(c.path||c.name)}">${nameHTML}</a>`:`<div class="conv-repo-name">${nameHTML}</div>`;
+    const name=root&&root!=='#'?`<a class="conv-repo-name" href="${escapeHTML(root)}" ${newTab} title="${escapeHTML(window.lfT(`在${platform}打开仓库 ${c.path||c.name}`,`Open repository ${c.path||c.name} on ${platform==='工蜂'?'Gongfeng':platform}`))}">${nameHTML}</a>`:`<div class="conv-repo-name">${nameHTML}</div>`;
     const badge=mr?`<span class="hui-badge" data-size="sm" data-tone="${conversationMRBadgeTone[state]||'neutral'}"><span class="hui-badge-label">${mrWord} ${escapeHTML(deliveryMRStateText[state]||'状态未知')}</span></span>`
       :`<span class="hui-badge" data-size="sm" data-tone="${directPush?'info':'muted'}"><span class="hui-badge-label">${directPush?'已直推':`未提交 ${mrWord}`}</span></span>`;
-    const work=c.work?(links.tree?`<a class="conv-branch" href="${escapeHTML(safeURL(links.tree))}" ${newTab} title="在${platform}打开分支 ${escapeHTML(c.work)}">${escapeHTML(c.work)}</a>`:`<span class="conv-branch">${escapeHTML(c.work)}</span>`):'<span class="conv-branch is-empty">没有工作分支记录</span>';
+    const work=c.work?(links.tree?`<a class="conv-branch" href="${escapeHTML(safeURL(links.tree))}" ${newTab} title="${escapeHTML(window.lfT(`在${platform}打开分支 ${c.work}`,`Open branch ${c.work} on ${platform==='工蜂'?'Gongfeng':platform}`))}">${escapeHTML(c.work)}</a>`:`<span class="conv-branch">${escapeHTML(c.work)}</span>`):'<span class="conv-branch is-empty">没有工作分支记录</span>';
     const tail=!target?'':target===c.work?'<span class="conv-flow-note">直接提交在这个分支上</span>':`<span class="conv-arrow" aria-hidden="true">→</span><span class="conv-branch is-base" title="目标分支">${escapeHTML(target)}</span>`;
     const flow=`<div class="conv-repo-flow">${work}${tail}</div>`;
     const acts=[
@@ -808,7 +808,7 @@ function sopPane(issue,data){
     const canRetriggerLane=actionWorkflow&&lane.started&&!issueManuallyClosed(issue)&&!issueTrackerClosed(issue)&&!clarificationNeedsConfirm(issue);
     const trigger=canStart?`<button class="button primary small" data-dispatch-issue="${escapeHTML(issue.id)}" data-workflow="${escapeHTML(actionWorkflow)}">触发</button>`:(canRetriggerLane?`<button class="button ghost small" data-retrigger-issue="${escapeHTML(issue.id)}" data-workflow="${escapeHTML(actionWorkflow)}">重新触发</button>`:'');
     const ownerName=userDisplay(userById(lane.assigneeUserId||issue.assigneeUserId))||'需求跟进人';
-    const hint=lane.started?`${lane.runCount||0} 次 · ${formatTokens(lane.tokens||0)}`:'展开可看节点';
+    const hint=lane.started?window.lfT(`${lane.runCount||0} 次 · ${formatTokens(lane.tokens||0)}`,`${lane.runCount||0} runs · ${formatTokens(lane.tokens||0)}`):'展开可看节点';
     return `<article class="req-lane-card req-sop-row ${escapeHTML(lane.status||'')} ${open?'is-open':''}" data-toggle-sop-row="${escapeHTML(lane.workflowId||'')}">
       <div class="req-sop-main">
         <span class="req-sop-idx">${idx+1}</span>
@@ -818,7 +818,7 @@ function sopPane(issue,data){
       ${open?`<div class="req-sop-detail">${nodeRows||`<div class="detail-empty">${lane.started?'暂无节点':'这条 SOP 还没有节点'}</div>`}</div>`:''}
     </article>`;
   }).join('');
-  const orphanHtml=orphans.length?`<div class="req-orphan">${orphans.map(lane=>`<div class="req-orphan-row"><span>还跑过 ${escapeHTML(lane.label||lane.workflowName||lane.workflowId)} · ${escapeHTML(laneStatusLabel(lane.status))}</span>${lane.latestRunId?`<button class="button ghost small" data-open-run="${escapeHTML(lane.latestRunId)}">查看</button>`:''}</div>`).join('')}</div>`:'';
+  const orphanHtml=orphans.length?`<div class="req-orphan">${orphans.map(lane=>`<div class="req-orphan-row"><span>${window.lfT(`还跑过 ${lane.label||lane.workflowName||lane.workflowId}`,`Also ran ${lane.label||lane.workflowName||lane.workflowId}`)} · ${escapeHTML(laneStatusLabel(lane.status))}</span>${lane.latestRunId?`<button class="button ghost small" data-open-run="${escapeHTML(lane.latestRunId)}">查看</button>`:''}</div>`).join('')}</div>`:'';
   if(!bound.length&&!orphans.length&&!workflow){
     return `<div class="detail-section"><div class="req-sop-empty"><p>这条需求还没有可跑的流程。</p></div></div>`;
   }
@@ -970,7 +970,7 @@ async function deleteIssueById(issueId){
   const force=issue.deletionRequiresForce===true;
   const title=force?'强制删除需求':'删除需求';
   const external=issue.source==='tapd'||issue.source==='gongfeng';
-  if(!await afConfirm({title,message:`确定${title}「${issue.title||issue.id}」？${issueDeletionWarning(force,external)}`,danger:true,confirmText:force?'确认强制删除':'确认删除'}))return;
+  if(!await afConfirm({title,message:window.lfT(`确定${title}「${issue.title||issue.id}」？${issueDeletionWarning(force,external)}`,`Confirm ${force?'force-delete':'delete'} requirement "${issue.title||issue.id}"? ${issueDeletionWarning(force,external)}`),danger:true,confirmText:force?'确认强制删除':'确认删除'}))return;
   try{
     await api(issueDeletePath(issueId,force),{method:'DELETE'});
     state.data.issues=(state.data.issues||[]).filter(i=>i.id!==issueId);

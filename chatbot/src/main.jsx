@@ -1,3 +1,4 @@
+import { applyUiLocale } from "./ui-locale.js";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
@@ -31,8 +32,10 @@ class Boundary extends React.Component {
     );
   }
 }
-createRoot(document.getElementById("root")).render(
-  <Boundary>
-    {isDesignerSurface(location.search) ? <SopDesigner /> : <App />}
-  </Boundary>,
-);
+applyUiLocale().finally(() => {
+  createRoot(document.getElementById("root")).render(
+    <Boundary>
+      {isDesignerSurface(location.search) ? <SopDesigner /> : <App />}
+    </Boundary>,
+  );
+});

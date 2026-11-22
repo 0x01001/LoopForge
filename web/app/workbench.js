@@ -171,13 +171,13 @@ function credentialCatalogKey(models){
 }
 function credentialCatalogError(models){
   const seen=new Set();
-  if(models.length>CREDENTIAL_CATALOG_MAX)return {index:CREDENTIAL_CATALOG_MAX,error:`模型目录最多 ${CREDENTIAL_CATALOG_MAX} 个`};
+  if(models.length>CREDENTIAL_CATALOG_MAX)return {index:CREDENTIAL_CATALOG_MAX,error:window.lfT('模型目录最多 '+CREDENTIAL_CATALOG_MAX+' 个','At most '+CREDENTIAL_CATALOG_MAX+' models')};
   for(const [index,{id='',name=''}] of models.entries()){
     const model={id,name};
     if(!model.id)return {index,field:'id',error:'模型 ID 不能为空'};
     if(model.id.length>128)return {index,field:'id',error:'模型 ID 不能超过 128 个字符'};
-    if(/[\s"'`\\\u0000-\u001f\u007f]/.test(model.id))return {index,field:'id',error:`模型 ID「${model.id}」不能包含空格、引号或反斜杠`};
-    if(seen.has(model.id))return {index,field:'id',error:`模型 ID「${model.id}」重复`};
+    if(/[\s"'`\\\u0000-\u001f\u007f]/.test(model.id))return {index,field:'id',error:window.lfT('模型 ID「'+model.id+'」不能包含空格、引号或反斜杠','Model ID “'+model.id+'” cannot contain spaces, quotes, or backslashes')};
+    if(seen.has(model.id))return {index,field:'id',error:window.lfT('模型 ID「'+model.id+'」重复','Duplicate model ID “'+model.id+'”')};
     if([...model.name].length>64)return {index,field:'name',error:'显示名称不能超过 64 个字符'};
     seen.add(model.id);
   }
@@ -358,18 +358,18 @@ function credentialCatalogProbeHTML(catalog,kind){
     return `<label class="credential-catalog-pick" data-pick="${escapeHTML((model.id+' '+(model.name||'')).toLowerCase())}"><input type="checkbox" value="${escapeHTML(model.id)}"${checked?' checked':''}><code>${escapeHTML(model.id)}</code>${model.name&&model.name!==model.id?`<small>${escapeHTML(model.name)}</small>`:''}${listed?'<em>已在目录</em>':''}</label>`;
   }).join('');
   const protocol=catalog.closest('.credential-editor-form')?.querySelector('select[name="protocol"]')?.value||catalog.dataset.catalogProtocol;
-  const sources={builtin:'CLI 内置模型',official:'来自官方服务',runner:'来自这台机器的账号登录'};
-  const source=sources[probe.source]||`来自 Base URL 的 ${escapeHTML(credentialModelsEndpoint(kind,protocol))}`;
+  const endpoint=escapeHTML(credentialModelsEndpoint(kind,protocol));
+  const source=probe.source==='builtin'?window.lfT('CLI 内置模型','Built-in CLI models'):probe.source==='official'?window.lfT('来自官方服务','From the official service'):probe.source==='runner'?window.lfT('来自这台机器的账号登录','From this machine\'s account'):window.lfT('来自 Base URL 的 '+endpoint,'From Base URL '+endpoint);
   return `<div class="credential-catalog-probe-top"><span class="credential-input is-plain is-search">${credentialGlyph('search',14)}<input data-catalog-search placeholder="搜索模型" aria-label="搜索模型" autocomplete="off" spellcheck="false"></span><span class="credential-catalog-picked" data-catalog-picked></span><button type="button" class="credential-btn link credential-ink" data-catalog-act="toggle-all">全选</button></div>
     <div class="credential-catalog-probe-list" role="group" aria-label="可用模型">${items}</div>
-    <div class="credential-catalog-probe-foot"><small>${source} · 勾选的模型会加入目录，取消勾选会移出</small><div><button type="button" class="credential-btn ghost credential-ink" data-catalog-act="probe-close">取消</button><button type="button" class="credential-btn primary credential-ink" data-catalog-act="probe-apply">更新列表</button></div></div>`;
+    <div class="credential-catalog-probe-foot"><small>${source} · ${window.lfT('勾选的模型会加入目录，取消勾选会移出','checked models are added; unchecked models are removed')}</small><div><button type="button" class="credential-btn ghost credential-ink" data-catalog-act="probe-close">取消</button><button type="button" class="credential-btn primary credential-ink" data-catalog-act="probe-apply">更新列表</button></div></div>`;
 }
 function syncCredentialCatalogProbe(catalog){
   const panel=catalog.querySelector('[data-catalog-probe]'),query=String(panel.querySelector('[data-catalog-search]')?.value||'').trim().toLowerCase();
   const picks=[...panel.querySelectorAll('.credential-catalog-pick')];
   picks.forEach(pick=>{pick.hidden=!!query&&!pick.dataset.pick.includes(query)});
   const visible=picks.filter(pick=>!pick.hidden),checked=picks.filter(pick=>pick.querySelector('input').checked).length;
-  const counter=panel.querySelector('[data-catalog-picked]');if(counter)counter.textContent=`已选 ${checked} / ${picks.length}`;
+  const counter=panel.querySelector('[data-catalog-picked]');if(counter)counter.textContent=window.lfT('已选 '+checked+' / '+picks.length,checked+' / '+picks.length+' selected');
   const toggle=panel.querySelector('[data-catalog-act="toggle-all"]');
   if(toggle){toggle.textContent=visible.length&&visible.every(pick=>pick.querySelector('input').checked)?'全不选':'全选';toggle.disabled=!visible.length}
 }
@@ -599,17 +599,17 @@ function credentialSubline(kind,user){
     if(verify?.busy)return source+dot+'<span class="is-info">正在校验…</span>';
     if(!result)return source+dot+use;
     if(result.error)return source+dot+`<span class="is-err">${escapeHTML(result.error)}</span>`;
-    if(!result.valid)return source+dot+`<span class="is-err">缺少权限 ${escapeHTML((result.missing||[]).join('、'))}</span>`;
+    if(!result.valid)return source+dot+`<span class="is-err">${window.lfT('缺少权限 '+escapeHTML((result.missing||[]).join('、')),'Missing scopes '+escapeHTML((result.missing||[]).join(', ')))}</span>`;
     return source+dot+'<span class="is-ok">令牌有效</span>'+(result.scopes?.length?dot+`<span class="credential-mono">${escapeHTML(result.scopes.join(' · '))}</span>`:'');
   }
   if(kind.key==='codeBuddyApiKey'){
     const raw=String(user.codeBuddyInternetEnvironment||'').trim(),env=codeBuddyEnvironment(raw);
-    return `<span>网络环境</span>${env?`<span class="credential-mono">${escapeHTML(env.label)}</span>`:`<span class="is-err">「${escapeHTML(raw)}」无法识别，按国际站连接</span>`}${dot}${use}`;
+    return `<span>网络环境</span>${env?`<span class="credential-mono">${escapeHTML(env.label)}</span>`:`<span class="is-err">${window.lfT('「'+escapeHTML(raw)+'」无法识别，按国际站连接','“'+escapeHTML(raw)+'” is not recognized; connecting as International')}</span>`}${dot}${use}`;
   }
   if(kind.extra){
     const models=kind.models&&credentialCatalogModels(credentialValue(user,kind.models.name)).length,baseUrl=credentialValue(user,kind.extra.name);
     const protocol=kind.protocol?kind.protocol.options.find(([id])=>id===credentialProtocol(kind,user))?.[1]:'';
-    return (baseUrl?`<span class="credential-mono">${escapeHTML(baseUrl)}</span>`:'<span>官方地址</span>')+(protocol?dot+`<span>${escapeHTML(protocol)}</span>`:'')+(models?dot+`<span>${models} 个自定义模型</span>`:'')+dot+use;
+    return (baseUrl?`<span class="credential-mono">${escapeHTML(baseUrl)}</span>`:'<span>官方地址</span>')+(protocol?dot+`<span>${escapeHTML(protocol)}</span>`:'')+(models?dot+`<span>${window.lfT(models+' 个自定义模型',models+' custom models')}</span>`:'')+dot+use;
   }
   return use;
 }
@@ -699,8 +699,8 @@ function credentialGroupHTML(group,user){
 }
 function credentialProgressHTML(user){
   const done=CREDENTIAL_KINDS.filter(kind=>credentialConfigured(kind,user)).length,next=credentialNextKind(user);
-  return `<div class="credential-segs" aria-hidden="true">${CREDENTIAL_KINDS.map((_,index)=>`<i${index<done?' class="is-on"':''}></i>`).join('')}</div><span class="credential-count"><b>${done}</b> / ${CREDENTIAL_KINDS.length} 已配置</span>`
-    +(next?`<span class="credential-next">下一步<button type="button" class="credential-btn link credential-ink" data-credential-setup="${next.key}">配置 ${escapeHTML(next.short)}<span class="credential-nudge">${credentialGlyph('arrow-right',13)}</span></button></span>`:`<span class="credential-ready">${credentialGlyph('check',15)}推荐凭证已全部就绪</span>`);
+  return `<div class="credential-segs" aria-hidden="true">${CREDENTIAL_KINDS.map((_,index)=>`<i${index<done?' class="is-on"':''}></i>`).join('')}</div><span class="credential-count"><b>${done}</b> / ${window.lfT(CREDENTIAL_KINDS.length+' 已配置',CREDENTIAL_KINDS.length+' configured')}</span>`
+    +(next?`<span class="credential-next">下一步<button type="button" class="credential-btn link credential-ink" data-credential-setup="${next.key}">${window.lfT('配置 '+escapeHTML(next.short),'Configure '+escapeHTML(next.short))}<span class="credential-nudge">${credentialGlyph('arrow-right',13)}</span></button></span>`:`<span class="credential-ready">${credentialGlyph('check',15)}推荐凭证已全部就绪</span>`);
 }
 function credentialFilterHTML(user){
   const done=CREDENTIAL_KINDS.filter(kind=>credentialConfigured(kind,user)).length,filter=credentialUI().filter;
@@ -1088,13 +1088,13 @@ function credentialWizardStepTwoHTML(kind){
     :credentialFieldHTML({label:kind.extra.label,note:kind.extra.note||(kind.extra.url?'可选 · 留空使用官方地址':''),name:'extra',type:kind.extra.url?'url':'text',value:wizard.extra,placeholder:kind.extra.placeholder,hint:''});
   const protocolField=kind.protocol?credentialProtocolHTML(kind,wizard.protocol||credentialProtocol(kind,{})):'';
   // The network environment decides where the key comes from, so it is chosen first.
-  return `<div class="credential-question">${credentialLogo(kind,'is-mini')}<span>${github?'使用访问令牌':'配置 '+escapeHTML(kind.short)}</span><small class="credential-description">${escapeHTML(kind.description)}</small></div>${methods}<ol class="credential-guide">${guide}</ol><div class="credential-fields">
+  return `<div class="credential-question">${credentialLogo(kind,'is-mini')}<span>${github?window.lfT('使用访问令牌','Use an access token'):window.lfT('配置 '+escapeHTML(kind.short),'Configure '+escapeHTML(kind.short))}</span><small class="credential-description">${escapeHTML(kind.description)}</small></div>${methods}<ol class="credential-guide">${guide}</ol><div class="credential-fields">
     ${kind.extra?.options?extraField+secretField:secretField+extraField+protocolField}
   </div>`;
 }
 function credentialWizardStepThreeHTML(kind){
   const wizard=credentialWizard;
-  if(wizard.done)return `<div class="credential-saved"><span class="credential-check-big"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7"/></svg></span><h4>${escapeHTML(kind.short)} 已保存</h4><p>下一次运行你负责的任务时生效，可随时在列表中展开编辑。</p></div>`;
+  if(wizard.done)return `<div class="credential-saved"><span class="credential-check-big"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7"/></svg></span><h4>${window.lfT(escapeHTML(kind.short)+' 已保存',escapeHTML(kind.short)+' saved')}</h4><p>下一次运行你负责的任务时生效，可随时在列表中展开编辑。</p></div>`;
   const extra=kind.extra?`<dt>${escapeHTML(kind.extra.label)}</dt><dd${kind.extra.url?' class="credential-mono"':''}>${escapeHTML(credentialExtraLabel(kind,wizard.extra))}</dd>`:'';
   const warning=credentialSecretWarning(kind,wizard.secret);
   const line=wizard.error?`<p class="credential-vline is-err" role="alert">${credentialGlyph('alert',13)}${escapeHTML(wizard.error)}</p>`

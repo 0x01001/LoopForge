@@ -57,7 +57,7 @@ function pagerHTML(key, p){
     buttons+=`<button type="button" class="pager-page${n===page?' active':''}" data-page-key="${escapeHTML(key)}" data-page="${n}">${n}</button>`;
     prev=n;
   }
-  return `<nav class="pager" data-pager="${escapeHTML(key)}" aria-label="分页"><span class="pager-meta">第 ${p.start+1}–${p.end} 条 / 共 ${p.total} 条</span><div class="pager-nav"><button type="button" class="pager-btn" data-page-key="${escapeHTML(key)}" data-page="${page-1}" ${page<=1?'disabled':''}>上一页</button>${buttons}<button type="button" class="pager-btn" data-page-key="${escapeHTML(key)}" data-page="${page+1}" ${page>=pages?'disabled':''}>下一页</button></div></nav>`;
+  return `<nav class="pager" data-pager="${escapeHTML(key)}" aria-label="分页"><span class="pager-meta">${window.lfT('第 '+(p.start+1)+'–'+(p.end)+' 条 / 共 '+(p.total)+' 条',(p.start+1)+'–'+(p.end)+' of '+(p.total))}</span><div class="pager-nav"><button type="button" class="pager-btn" data-page-key="${escapeHTML(key)}" data-page="${page-1}" ${page<=1?'disabled':''}>上一页</button>${buttons}<button type="button" class="pager-btn" data-page-key="${escapeHTML(key)}" data-page="${page+1}" ${page>=pages?'disabled':''}>下一页</button></div></nav>`;
 }
 function goListPage(key, page){
   if(!state.listPages)state.listPages={};
@@ -621,7 +621,7 @@ function openCodeEditorModal({ title, subtitle, language='shell', value='', onSa
     const beforeCursor=text.slice(0, selStart);
     const curLine=beforeCursor.split('\n').length;
     const curCol=selStart - beforeCursor.lastIndexOf('\n');
-    stats.textContent=`行 ${curLine}，列 ${curCol} · 共 ${lineCount} 行 · ${text.length} 字符`;
+    stats.textContent=window.lfT(`行 ${curLine}，列 ${curCol} · 共 ${lineCount} 行 · ${text.length} 字符`,`Ln ${curLine}, Col ${curCol} · ${lineCount} lines · ${text.length} chars`);
     syncScroll();
   }
 

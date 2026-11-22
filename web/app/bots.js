@@ -76,7 +76,7 @@ function botTargetHTML(target){return target?`<span class="bot-target"><span cla
 function botRowHTML(bot){
  const id=escapeHTML(bot.id),name=escapeHTML(bot.name),manage=canManageBot(bot),target=botTargetHTML(bot.target);
  const sub=escapeHTML(bot.model||BOT_DEFAULT_MODEL)+(bot.interactionEnabled?' · 已启用对话':'');
- return `<tr data-bot-row="${id}"><td><div class="bot-row-main"><span class="bot-glyph">${botIcon('robot')}</span><span class="bot-row-text"><b class="bot-row-name">${name}</b><small class="bot-row-sub">${sub}</small><small class="bot-row-target">${target}</small></span></div></td><td class="bot-col-target">${target}</td><td>${botEnabledBadge(bot.enabled)}</td><td class="bot-col-sub">${botHealthBadge(bot.health)}</td><td class="bot-col-actions"><div class="bot-row-actions"><button type="button" class="hui-icon-btn" data-bot-edit="${id}" aria-label="编辑 ${name}" title="编辑">${botIcon('edit')}</button>${manage?`<button type="button" class="hui-icon-btn is-danger" data-bot-delete="${id}" aria-label="删除 ${name}" title="删除">${botIcon('trash')}</button>`:''}</div></td></tr>`;
+ return `<tr data-bot-row="${id}"><td><div class="bot-row-main"><span class="bot-glyph">${botIcon('robot')}</span><span class="bot-row-text"><b class="bot-row-name">${name}</b><small class="bot-row-sub">${sub}</small><small class="bot-row-target">${target}</small></span></div></td><td class="bot-col-target">${target}</td><td>${botEnabledBadge(bot.enabled)}</td><td class="bot-col-sub">${botHealthBadge(bot.health)}</td><td class="bot-col-actions"><div class="bot-row-actions"><button type="button" class="hui-icon-btn" data-bot-edit="${id}" aria-label="${window.lfT('编辑 '+name,'Edit '+name)}" title="编辑">${botIcon('edit')}</button>${manage?`<button type="button" class="hui-icon-btn is-danger" data-bot-delete="${id}" aria-label="${window.lfT('删除 '+name,'Delete '+name)}" title="删除">${botIcon('trash')}</button>`:''}</div></td></tr>`;
 }
 function botListHTML(items){
  if(!items?.length)return botGuideHTML();
@@ -105,7 +105,7 @@ function botTargetPaneHTML(bot,manage){
 }
 function botTestPaneHTML(bot,manage){
  const ready=!!(bot.enabled&&bot.target);
- const result=botUI.testResult?`<div class="bot-result-fold"><div class="bot-result" role="status">${botIcon('check-draw')}<span>测试通知已发送到 ${escapeHTML(botUI.testResult)}，可在「记录 → 发送记录」查看。</span></div></div>`:'';
+ const result=botUI.testResult?`<div class="bot-result-fold"><div class="bot-result" role="status">${botIcon('check-draw')}<span>${window.lfT('测试通知已发送到 '+escapeHTML(botUI.testResult)+'，可在「记录 → 发送记录」查看。','Test notice sent to '+escapeHTML(botUI.testResult)+'. See it under Records → Deliveries.')}</span></div></div>`:'';
  return `<div class="bot-summary"><span class="muted">Bot</span><b>${escapeHTML(bot.name)}</b><span class="muted">接收会话</span><span>${bot.target?`${botTypeLabel(bot.target.type)} · ${escapeHTML(bot.target.name)}`:'尚未绑定接收会话'}</span><span class="muted">状态</span><span>${botEnabledBadge(bot.enabled)}</span></div>${bot.enabled?'':'<p class="muted bot-hint">Bot 未启用，请回到第①步启用并保存后再发送测试。</p>'}${result}<div class="bot-save-row"><button type="button" class="button primary" id="botSendTest" ${manage&&ready&&!botUI.busy?'':'disabled'}>${botBusyLabel('test','send','发送测试通知','发送中…')}</button><button type="button" class="button ghost" data-bot-back ${botUI.busy?'disabled':''}>完成，返回列表</button></div>`;
 }
 function botSessionHTML(){
@@ -131,7 +131,7 @@ function botInteractionPanelHTML(){
  if(!bots.length)return '<p class="bot-empty">暂无可查看对话的 Bot。仅创建者或项目管理员可查看对话记录。</p>';
  const bot=bots.find(b=>b.id===botUI.interactionBotId)||bots[0],data=botUI.interaction,connection=data?.connection?.state||'offline';
  const messages=(data?.messages||[]).filter(m=>m.action!=='notification').slice(0,12);
- const count=data?`<span class="bot-subbar-hint">最近对话 · ${data.conversations?.length||0} 个聊天</span>`:'';
+ const count=data?`<span class="bot-subbar-hint">${window.lfT('最近对话 · '+(data.conversations?.length||0)+' 个聊天','Recent chats · '+(data.conversations?.length||0))}</span>`:'';
  const body=botUI.interactionError?`<p class="bot-record-error">${escapeHTML(botUI.interactionError)}</p>`:!data&&botUI.interactionLoading?botSkeletonHTML(2):messages.map(m=>`<div class="bot-entry"><div class="bot-entry-meta"><small>${escapeHTML(new Date(m.createdAt).toLocaleString())} · ${escapeHTML(m.senderId||'')}</small>${botMessageBadge(m.status)}</div><p>${escapeHTML(m.content||m.action||'')}</p>${m.lastError?`<small class="bot-record-error">${escapeHTML(m.lastError)}</small>`:''}${m.reply?`<p class="bot-entry-reply">${escapeHTML(m.reply.slice(0,240))}</p>`:''}</div>`).join('')||'<p class="bot-empty">还没有对话记录</p>';
  return `<div class="bot-conv"><div class="bot-conv-bar"><span class="bot-interaction-pick"><label><span class="bot-sr">Bot</span><select class="select" id="botInteractionBot" aria-label="选择 Bot">${bots.map(b=>`<option value="${escapeHTML(b.id)}" ${b.id===bot.id?'selected':''}>${escapeHTML(b.name)}</option>`).join('')}</select></label>${botConnectionBadge(connection)}</span><span class="bot-head-spacer"></span>${count}<button type="button" class="hui-icon-btn" id="botRefreshInteractions" title="刷新对话记录" aria-label="刷新对话记录" ${botUI.interactionLoading?'disabled':''}>${botUI.interactionLoading?'<span class="bot-icon bot-spin" data-bot-icon="spinner" aria-hidden="true"></span>':botIcon('refresh')}</button></div>${data?.connection?.lastError?`<p class="bot-record-error">${escapeHTML(data.connection.lastError)}</p>`:''}${body}</div>`;
 }
@@ -347,7 +347,7 @@ function bindBotEditor(host){
   if(botUI.busy)return;
   if(botCredentialsDirty(botUI.selected)){toast('请先保存新的凭据','warn');return}
   const id=botUI.selected.id,revision=botUI.revision;botUI.busy=true;botUI.busyAction='sessions';botUI.sessions=[];renderBots();
-  try{const result=await api(`/api/notification-bots/${encodeURIComponent(id)}/sessions`);if(revision!==botUI.revision||botUI.selected?.id!==id)return;botUI.sessions=result.sessions;botUI.error='';botUI.selected.health='ready';const stored=botUI.items.find(b=>b.id===id);if(stored)stored.health='ready';botMotion('sessions');toast(`已刷新 ${result.total} 个可发送会话`,'ok')}
+  try{const result=await api(`/api/notification-bots/${encodeURIComponent(id)}/sessions`);if(revision!==botUI.revision||botUI.selected?.id!==id)return;botUI.sessions=result.sessions;botUI.error='';botUI.selected.health='ready';const stored=botUI.items.find(b=>b.id===id);if(stored)stored.health='ready';botMotion('sessions');toast(window.lfT('已刷新 '+result.total+' 个可发送会话','Refreshed '+result.total+' sendable chats'),'ok')}
   catch(e){if(revision===botUI.revision)botUI.error=e.message}
   finally{botUI.busy=false;botUI.busyAction='';renderBots()}
  });
@@ -370,14 +370,14 @@ function bindBotEditor(host){
   const bot=botUI.selected;if(botUI.busy||!bot?.id)return;
   if(bot._targetChanged||botCredentialsDirty(bot)){toast('请先保存设置，再发送测试通知','warn');return}
   const id=bot.id,projectId=botUI.projectId,revision=botUI.revision;botUI.busy=true;botUI.busyAction='test';botUI.testResult='';renderBots();
-  try{const result=await api(`/api/notification-bots/${encodeURIComponent(id)}/test`,{method:'POST'});toast(`测试通知已发送到 ${result.targetName}`,'ok');if(revision===botUI.revision&&botUI.selected?.id===id){botUI.testResult=result.targetName||bot.target?.name||'';botUI.error='';botMotion('result')}try{const records=await api(`/api/notification-deliveries?projectId=${encodeURIComponent(projectId)}`,{silent:true});if(revision===botUI.revision){botUI.deliveries=records;botUI.watchCount=0;botWatchDeliveries()}}catch{}}
+  try{const result=await api(`/api/notification-bots/${encodeURIComponent(id)}/test`,{method:'POST'});toast(window.lfT('测试通知已发送到 '+result.targetName,'Test notice sent to '+result.targetName),'ok');if(revision===botUI.revision&&botUI.selected?.id===id){botUI.testResult=result.targetName||bot.target?.name||'';botUI.error='';botMotion('result')}try{const records=await api(`/api/notification-deliveries?projectId=${encodeURIComponent(projectId)}`,{silent:true});if(revision===botUI.revision){botUI.deliveries=records;botUI.watchCount=0;botWatchDeliveries()}}catch{}}
   catch(e){if(revision===botUI.revision)botUI.error=e.message}finally{botUI.busy=false;botUI.busyAction='';renderBots()}
  });
 }
 function bindBotSessionSelection(host){host.querySelectorAll('[name="targetId"]').forEach(el=>el.onchange=()=>{botUI.selected.target=structuredClone(botUI.sessions.find(chat=>chat.id===el.value));botUI.selected._targetChanged=botStoredBot(botUI.selected)?.target?.id!==el.value;botMotion('pick');renderBots()})}
 async function botDelete(bot,row){
  if(!bot?.id||botUI.busy||botUI.deletingId===bot.id)return;
- if(!await afConfirm(`确定删除「${bot.name}」？已有节点绑定将无法继续发送。`))return;
+ if(!await afConfirm(window.lfT('确定删除「'+bot.name+'」？已有节点绑定将无法继续发送。','Delete “'+bot.name+'”? Existing step bindings will stop sending.')))return;
  if(botUI.deletingId===bot.id)return;
  const projectId=botUI.projectId,revision=botUI.revision;botUI.deletingId=bot.id;
  try{await botDeleteRequest(bot,row,projectId,revision)}

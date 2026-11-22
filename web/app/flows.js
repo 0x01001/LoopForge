@@ -223,7 +223,7 @@ function removeNode(id){
   if(state.selectedNode===id)state.selectedNode=null;
   if(state.renamingNode===id)state.renamingNode=null;
   dirty();renderCanvas();renderProperties();
-  flowToast(`已删除「${n.name}」`,{undo:true});
+  flowToast(window.lfT(`已删除「${n.name}」`,`Deleted "${n.name}"`),{undo:true});
   return true;
 }
 function deleteSelected(){if(state.selectedNode)removeNode(state.selectedNode)}
@@ -307,7 +307,7 @@ function nodeMeta(n){
   if(n.type==='sop'){
     const wf=sopWorkflowChoices().find(w=>w.id===n.sopWorkflowId)||(state.data.workflows||[]).find(w=>w.id===n.sopWorkflowId);
     const arts=(n.artifactOutputs||[]).map(a=>a.name).filter(Boolean);
-    const tags=!n.sopWorkflowId?[{text:'未选择流程',warn:true}]:!wf?[{text:'流程不可用',warn:true}]:[{text:arts.length?`交给下一步：${arts.join('、')}`:'产物交给下一步'}];
+    const tags=!n.sopWorkflowId?[{text:'未选择流程',warn:true}]:!wf?[{text:'流程不可用',warn:true}]:[{text:arts.length?window.lfT(`交给下一步：${arts.join('、')}`,`Handed to the next step: ${arts.join(', ')}`):'产物交给下一步'}];
     return {kind:'sop',subtitle:wf?.name||(n.sopWorkflowId?'流程不可用':'未选择流程'),tags};
   }
   return {kind:'approval',subtitle:'人工门禁',tags:[{text:'等待人工确认'}]};
@@ -388,9 +388,9 @@ function bindNodeRename(input){
 function flowDiagnostics(){
   if(!state.workflow)return [];
   const nodes=state.workflow.nodes||[],edges=state.workflow.edges||[],incoming=new Map(nodes.map(n=>[n.id,0])),items=[];edges.forEach(e=>incoming.has(e.target)&&incoming.set(e.target,incoming.get(e.target)+1));
-  const starts=nodes.filter(n=>incoming.get(n.id)===0);items.push({level:!nodes.length?'error':starts.length===1?'ok':'warn',title:'流程入口',detail:!nodes.length?'至少添加一个节点':starts.length===1?`从「${starts[0].name}」开始`:`检测到 ${starts.length} 个入口；这些节点会并行启动`});
-  items.push({level:state.data.sandboxes?.some(s=>s.id===state.workflow.sandboxProfileId)?'ok':'error',title:'运行沙箱',detail:state.workflow.sandboxProfileId?`整条流程使用 ${state.workflow.sandboxProfileId}`:'尚未选择 Workflow 运行沙箱'});
-  nodes.forEach(n=>{if(isPreviewBuildNode(n.id)){const inDeg=edges.filter(e=>e.target===n.id).length;items.push({level:inDeg?'ok':'warn',title:n.name,detail:inDeg?`插在流程中间：CodeBuddy ${workflowPreviewModel(state.workflow)} 构建静态站点，运行成功后归档预览`:'还没有前序依赖，会作为流程入口直接运行；请从上游节点连线到此'});return}if(n.type==='agent'){const missing=[];const agent=workflowAgent(n.agentId);const generic=catalogGeneric(state.workflow);if(!n.agentId)missing.push('角色');else if(!agent)missing.push(generic?'通用模板角色未加载':'角色不属于当前项目或未共享');else if(!generic&&!(agent.executorId||n.executorId))missing.push('角色未选模型');if(!(n.artifactOutputs||[]).length&&!(agent?.artifactOutputs||[]).length)missing.push('角色产物契约');items.push({level:missing.length?'warn':'ok',title:n.name,detail:missing.length?`尚未配置：${missing.join('、')}`:generic?'已绑定通用模板角色；任务书与门禁在角色定义中':'已绑定角色；任务书与门禁在角色定义中'})}if(n.type==='sop'){const missing=[];const wf=sopWorkflowChoices(state.workflow.id).find(w=>w.id===n.sopWorkflowId)||(state.data.workflows||[]).find(w=>w.id===n.sopWorkflowId);if(!n.sopWorkflowId)missing.push('要跑的 SOP');else if(!wf)missing.push('引用的 SOP 不存在');if(n.sopWorkflowId===state.workflow.id)missing.push('不能引用自己');items.push({level:missing.length?'error':'ok',title:n.name,detail:missing.length?`尚未配置：${missing.join('、')}`:`引用「${wf.name}」，产物交给下一步`})}if(n.rejectTo&&!nodes.some(x=>x.id===n.rejectTo))items.push({level:'error',title:n.name,detail:'失败打回目标不存在'})});
+  const starts=nodes.filter(n=>incoming.get(n.id)===0);items.push({level:!nodes.length?'error':starts.length===1?'ok':'warn',title:'流程入口',detail:!nodes.length?'至少添加一个节点':starts.length===1?window.lfT(`从「${starts[0].name}」开始`,`Starts at "${starts[0].name}"`):`检测到 ${starts.length} 个入口；这些节点会并行启动`});
+  items.push({level:state.data.sandboxes?.some(s=>s.id===state.workflow.sandboxProfileId)?'ok':'error',title:'运行沙箱',detail:state.workflow.sandboxProfileId?window.lfT(`整条流程使用 ${state.workflow.sandboxProfileId}`,`The whole SOP uses ${state.workflow.sandboxProfileId}`):'尚未选择 Workflow 运行沙箱'});
+  nodes.forEach(n=>{if(isPreviewBuildNode(n.id)){const inDeg=edges.filter(e=>e.target===n.id).length;items.push({level:inDeg?'ok':'warn',title:n.name,detail:inDeg?window.lfT(`插在流程中间：CodeBuddy ${workflowPreviewModel(state.workflow)} 构建静态站点，运行成功后归档预览`,`Inserted mid-flow: CodeBuddy ${workflowPreviewModel(state.workflow)} builds the static site, then archives the preview after a successful run`):'还没有前序依赖，会作为流程入口直接运行；请从上游节点连线到此'});return}if(n.type==='agent'){const missing=[];const agent=workflowAgent(n.agentId);const generic=catalogGeneric(state.workflow);if(!n.agentId)missing.push('角色');else if(!agent)missing.push(generic?'通用模板角色未加载':'角色不属于当前项目或未共享');else if(!generic&&!(agent.executorId||n.executorId))missing.push('角色未选模型');if(!(n.artifactOutputs||[]).length&&!(agent?.artifactOutputs||[]).length)missing.push('角色产物契约');items.push({level:missing.length?'warn':'ok',title:n.name,detail:missing.length?window.lfT(`尚未配置：${missing.join('、')}`,`Not configured yet: ${missing.join(', ')}`):generic?'已绑定通用模板角色；任务书与门禁在角色定义中':'已绑定角色；任务书与门禁在角色定义中'})}if(n.type==='sop'){const missing=[];const wf=sopWorkflowChoices(state.workflow.id).find(w=>w.id===n.sopWorkflowId)||(state.data.workflows||[]).find(w=>w.id===n.sopWorkflowId);if(!n.sopWorkflowId)missing.push('要跑的 SOP');else if(!wf)missing.push('引用的 SOP 不存在');if(n.sopWorkflowId===state.workflow.id)missing.push('不能引用自己');items.push({level:missing.length?'error':'ok',title:n.name,detail:missing.length?window.lfT(`尚未配置：${missing.join('、')}`,`Not configured yet: ${missing.join(', ')}`):window.lfT(`引用「${wf.name}」，产物交给下一步`,`References "${wf.name}"; outputs go to the next step`)})}if(n.rejectTo&&!nodes.some(x=>x.id===n.rejectTo))items.push({level:'error',title:n.name,detail:'失败打回目标不存在'})});
   if(nodes.length>1&&edges.length===0)items.push({level:'warn',title:'成功路径',detail:'多个节点之间没有依赖关系，将同时启动'});if(!items.some(x=>x.level==='error'))items.push({level:'ok',title:'结构校验',detail:'未发现阻止保存或试运行的结构错误'});return items;
 }
 function setFlowView(mode){$$('.canvas-view-toggle button').forEach(b=>b.classList.toggle('active',b.dataset.flowView===mode));$('#canvas').hidden=mode!=='canvas';$('#flowCheckPanel').hidden=mode!=='check';$('#flowStageWrap')?.classList.toggle('check-mode',mode==='check');if(mode==='check')$('#flowCheckPanel').innerHTML=`<div class="page-heading" style="margin-bottom:14px"><div><h1 style="font-size:17px">配置检查</h1><p>运行前检查入口、CLI、产物契约和返工路径。</p></div></div><div class="flow-check-grid">${flowDiagnostics().map(x=>`<div class="flow-check-item ${x.level}"><b>${escapeHTML(x.title)}</b><p>${escapeHTML(x.detail)}</p></div>`).join('')}</div>`;else flowViewport.renderMinimap()}
@@ -450,7 +450,7 @@ function completeFlowConnect(target){
   if(outlet!=='reject')return connect(src.id,target.id);
   const prev=state.workflow.nodes.find(x=>x.id===src.rejectTo);
   if(!setRejectTo(src.id,target.id)){renderCanvas();return false}
-  flowToast(prev&&prev.id!==target.id?`「${src.name}」的打回目标已从「${prev.name}」改为「${target.name}」`:`「${src.name}」失败时打回到「${target.name}」`,{undo:true});
+  flowToast(prev&&prev.id!==target.id?window.lfT(`「${src.name}」的打回目标已从「${prev.name}」改为「${target.name}」`,`Reject target of "${src.name}" changed from "${prev.name}" to "${target.name}"`):window.lfT(`「${src.name}」失败时打回到「${target.name}」`,`On failure, "${src.name}" returns to "${target.name}"`),{undo:true});
   return true;
 }
 function cancelFlowConnect(){
@@ -466,7 +466,7 @@ function connect(source,target){
   state.workflow.edges.push({id:uid('edge'),source,target,when:'success'});
   dirty();renderCanvas();renderProperties();
   const a=state.workflow.nodes.find(n=>n.id===source),b=state.workflow.nodes.find(n=>n.id===target);
-  flowToast(`已连接「${a?.name||source}」→「${b?.name||target}」`,{undo:true});
+  flowToast(window.lfT(`已连接「${a?.name||source}」→「${b?.name||target}」`,`Connected "${a?.name||source}" → "${b?.name||target}"`),{undo:true});
   return true;
 }
 // Sets the single reject route of a node; an empty target clears it.
@@ -538,12 +538,12 @@ function renderEdges(){
     wf.edges.forEach(e=>{
       const a=byId.get(e.source),b=byId.get(e.target);if(!a||!b)return;
       const p=flowPortPoint(a,'success'),q=flowPortPoint(b,'in'),d=flowCurve(p,q);
-      html+=`<g class="fd-e" data-edge="${escapeHTML(e.id)}"><path class="fd-e-hit" d="${d}"/><path class="edge fd-e-path" d="${d}"/>${del((p.x+q.x)/2,(p.y+q.y)/2)}<title>${escapeHTML(a.name)} → ${escapeHTML(b.name)} · 点击删除</title></g>`;
+      html+=`<g class="fd-e" data-edge="${escapeHTML(e.id)}"><path class="fd-e-hit" d="${d}"/><path class="edge fd-e-path" d="${d}"/>${del((p.x+q.x)/2,(p.y+q.y)/2)}<title>${escapeHTML(window.lfT(`${a.name} → ${b.name} · 点击删除`,`${a.name} → ${b.name} · Click to delete`))}</title></g>`;
     });
     wf.nodes.forEach(n=>{
       const t=n.rejectTo&&byId.get(n.rejectTo);if(!t)return;
       const {d,mx,my}=flowRejectPath(n,t);
-      html+=`<g class="fd-e rj" data-reject-from="${escapeHTML(n.id)}"><path class="fd-e-hit" d="${d}"/><path class="edge fd-e-path reject-edge" d="${d}"/><g class="fd-e-label" transform="translate(${mx} ${my})"><rect x="-30" y="-10" width="60" height="20" rx="10"/><text text-anchor="middle" y="3.5">失败打回</text></g>${del(mx+42,my)}<title>${escapeHTML(n.name)} 失败打回到 ${escapeHTML(t.name)} · 点击取消</title></g>`;
+      html+=`<g class="fd-e rj" data-reject-from="${escapeHTML(n.id)}"><path class="fd-e-hit" d="${d}"/><path class="edge fd-e-path reject-edge" d="${d}"/><g class="fd-e-label" transform="translate(${mx} ${my})"><rect x="-30" y="-10" width="60" height="20" rx="10"/><text text-anchor="middle" y="3.5">失败打回</text></g>${del(mx+42,my)}<title>${escapeHTML(window.lfT(`${n.name} 失败打回到 ${t.name} · 点击取消`,`${n.name} returns to ${t.name} on failure · Click to cancel`))}</title></g>`;
     });
     const src=state.connectFrom&&byId.get(state.connectFrom);
     if(src&&state.connectCursor){
@@ -961,10 +961,10 @@ function agentBindCard(n){
   const available=workflowAgents(),owned=available.filter(x=>!generic&&x.projectId===projectId),shared=available.filter(x=>!generic&&x.projectId!==projectId);
   const options=items=>items.map(x=>{const owner=projects.find(p=>p.id===x.projectId)?.name||x.projectId;return `<option value="${escapeHTML(x.id)}" ${x.id===n.agentId?'selected':''}>${escapeHTML(x.name)}${!generic&&x.projectId!==projectId?` · 来自 ${escapeHTML(owner)}`:''}</option>`}).join('');
   const grouped=generic
-    ?(available.length?`<optgroup label="通用模板角色 · ${available.length} 个">${options(available)}</optgroup>`:'')
-    :(owned.length?`<optgroup label="本项目角色 · ${owned.length} 个">${options(owned)}</optgroup>`:'')+(shared.length?`<optgroup label="共享角色 · ${shared.length} 个">${options(shared)}</optgroup>`:'');
+    ?(available.length?`<optgroup label="${window.lfT(`通用模板角色 · ${available.length} 个`,`Template roles · ${available.length}`)}">${options(available)}</optgroup>`:'')
+    :(owned.length?`<optgroup label="${window.lfT(`本项目角色 · ${owned.length} 个`,`Project roles · ${owned.length}`)}">${options(owned)}</optgroup>`:'')+(shared.length?`<optgroup label="${window.lfT(`共享角色 · ${shared.length} 个`,`Shared roles · ${shared.length}`)}">${options(shared)}</optgroup>`:'');
   const opts=(invalid+grouped)||(generic?'<option value="">该模板还没有打包角色</option>':'<option value="">当前项目暂无可用角色</option>');
-  const hint=generic?'这些角色打包在通用模板里，和当前项目目录无关。改任务书只影响平台模板，所有项目下次运行生效。':`本项目 ${owned.length} 个 · 共享 ${shared.length} 个；其他项目私有角色已隐藏。`;
+  const hint=generic?'这些角色打包在通用模板里，和当前项目目录无关。改任务书只影响平台模板，所有项目下次运行生效。':window.lfT(`本项目 ${owned.length} 个 · 共享 ${shared.length} 个；其他项目私有角色已隐藏。`,`This project: ${owned.length}. Shared: ${shared.length}. Private roles from other projects are hidden.`);
   if(!agent)return `<div class="fd-field"><label>这个步骤用哪个角色</label><select class="select" data-p="agentId">${opts}</select><p class="prop-hint">${hint}</p><p class="prop-hint">先选一个已定义的角色。画布只编排顺序和打回，不改编排角色内部的任务。</p></div>`;
   const arts=effectiveNodeArtifacts(n,agent),gates=roleGates(agent);
   const duty=String(agent.description||'').trim(),taskHint=duty?(duty.length>48?`${duty.slice(0,48)}…`:duty):'还没写职责，可在角色定义里补';
@@ -1154,7 +1154,7 @@ function openSOPWizard(){
   $('#sopTemplateChoices').innerHTML=choices.map((w,index)=>`<label class="template-choice ${index===0?'active':''}"><input type="radio" name="template" value="${escapeHTML(w.id)}" ${index===0?'checked':''}><span class="template-icon">${catalogGeneric(w)?'通':w.id.includes('issue')?'修':w.id.includes('requirement')?'需':'▤'}</span><div><b>${escapeHTML(w.name)}</b><p>${escapeHTML(w.description||'复制生产模板')}</p><small>${catalogGeneric(w)?'通用 · 所有项目可用 · ':''}推荐 · ${w.nodes?.length||0} 个节点</small></div></label>`).join('')+`<label class="template-choice ${choices.length?'':'active'}"><input type="radio" name="template" value="blank" ${choices.length?'':'checked'}><span class="template-icon blank">＋</span><div><b>从空白开始</b><p>仅适合需要完全自定义的流程</p><small>高级方式 · 0 个节点</small></div></label>`;
   $('#sopTemplateChoices').querySelectorAll('input').forEach(input=>input.onchange=()=>{$$('#sopTemplateChoices .template-choice').forEach(x=>x.classList.toggle('active',x.contains(input)));state.sopTemplate=input.value;syncSOPSandboxSelection()});
   setSOPWizardStep(1);$('#sopCreateModal').classList.add('open');setTimeout(()=>f.elements.name.focus(),0)}
-function setSOPWizardStep(step){const f=$('#sopCreateForm');syncSOPSandboxSelection();if(step>1&&state.sopWizardStep===1&&!f.elements.name.value.trim())return toast('先填写一个便于团队识别的流程名称');state.sopWizardStep=Math.max(1,Math.min(3,step));f.querySelectorAll('.wizard-pane').forEach(p=>p.classList.toggle('active',Number(p.dataset.step)===state.sopWizardStep));f.querySelectorAll('[data-step-target]').forEach(b=>b.classList.toggle('active',Number(b.dataset.stepTarget)<=state.sopWizardStep));$('#sopPrev').disabled=state.sopWizardStep===1;$('#sopNext').hidden=state.sopWizardStep===3;$('#sopNext').textContent=state.sopWizardStep===1?'选择流程模板':'查看创建摘要';$('#sopFinish').hidden=state.sopWizardStep===1;$('#sopFinish').textContent=state.sopWizardStep===2?'使用此模板创建':'创建并进入设计器';$('#sopStepHint').textContent=state.sopWizardStep===1?'填写基本信息即可开始':state.sopWizardStep===2?'选择最接近的模板，后续仍可修改':'确认后进入可视化设计器';if(state.sopWizardStep===3){const template=state.data.workflows.find(w=>w.id===state.sopTemplate);$('#sopCreateSummary').innerHTML=`<div><span>流程名称</span><b>${escapeHTML(f.elements.name.value)}</b></div><div><span>负责人</span><b>${escapeHTML(f.elements.owner.value||'暂未指定')}</b></div><div><span>创建方式</span><b>${template?`基于「${escapeHTML(template.name)}」`:'空白流程'}</b></div><div><span>${escapeHTML(lfT('运行沙箱','Run sandbox'))}</span><b>${escapeHTML(sopSandboxChoices().find(s=>s.id===f.elements.sandboxProfileId.value)?.name||lfT('未选择','Not selected'))}</b></div><div><span>初始结构</span><b>${template?.nodes?.length||0} 个节点 · ${template?.edges?.length||0} 条依赖</b></div>`}}
+function setSOPWizardStep(step){const f=$('#sopCreateForm');syncSOPSandboxSelection();if(step>1&&state.sopWizardStep===1&&!f.elements.name.value.trim())return toast('先填写一个便于团队识别的流程名称');state.sopWizardStep=Math.max(1,Math.min(3,step));f.querySelectorAll('.wizard-pane').forEach(p=>p.classList.toggle('active',Number(p.dataset.step)===state.sopWizardStep));f.querySelectorAll('[data-step-target]').forEach(b=>b.classList.toggle('active',Number(b.dataset.stepTarget)<=state.sopWizardStep));$('#sopPrev').disabled=state.sopWizardStep===1;$('#sopNext').hidden=state.sopWizardStep===3;$('#sopNext').textContent=state.sopWizardStep===1?'选择流程模板':'查看创建摘要';$('#sopFinish').hidden=state.sopWizardStep===1;$('#sopFinish').textContent=state.sopWizardStep===2?'使用此模板创建':'创建并进入设计器';$('#sopStepHint').textContent=state.sopWizardStep===1?'填写基本信息即可开始':state.sopWizardStep===2?'选择最接近的模板，后续仍可修改':'确认后进入可视化设计器';if(state.sopWizardStep===3){const template=state.data.workflows.find(w=>w.id===state.sopTemplate);$('#sopCreateSummary').innerHTML=`<div><span>流程名称</span><b>${escapeHTML(f.elements.name.value)}</b></div><div><span>负责人</span><b>${escapeHTML(f.elements.owner.value||'暂未指定')}</b></div><div><span>创建方式</span><b>${template?window.lfT(`基于「${template.name}」`,`Based on "${template.name}"`):'空白流程'}</b></div><div><span>${escapeHTML(lfT('运行沙箱','Run sandbox'))}</span><b>${escapeHTML(sopSandboxChoices().find(s=>s.id===f.elements.sandboxProfileId.value)?.name||lfT('未选择','Not selected'))}</b></div><div><span>初始结构</span><b>${window.lfT(`${template?.nodes?.length||0} 个节点 · ${template?.edges?.length||0} 条依赖`,`${template?.nodes?.length||0} steps · ${template?.edges?.length||0} dependencies`)}</b></div>`}}
 async function createSOPFromWizard(e){
   e.preventDefault();
   const f=e.currentTarget,template=(state.data.workflows||[]).find(w=>w.id===state.sopTemplate);
@@ -1182,18 +1182,18 @@ async function createSOPFromWizard(e){
     state.data.workflows.unshift(saved);state.workflow=clone(saved);state.selectedNode=null;markWorkflowClean();
     $('#sopCreateModal').classList.remove('open');renderAll();switchView('flow');
     const missing=catalogGeneric(template)?genericRequirementRows(saved).filter(r=>!r.ok):[];
-    toast(missing.length?`SOP 草稿已创建；${missing.length} 项运行依赖未配置（${missing.map(r=>r.label).join('、')}）`:'SOP 草稿已创建，请继续设计节点',missing.length?'':'ok')
+    toast(missing.length?window.lfT(`SOP 草稿已创建；${missing.length} 项运行依赖未配置（${missing.map(r=>r.label).join('、')}）`,`SOP draft created; ${missing.length} runtime dependencies are not configured (${missing.map(r=>r.label).join(', ')})`):'SOP 草稿已创建，请继续设计节点',missing.length?'':'ok')
   }catch(err){
     toast(/sandbox profile.*not found/i.test(err.message)
       ?lfT('所选运行沙箱已不可用，请点击「刷新沙箱」后重新选择。','The selected sandbox is no longer available. Refresh sandboxes and select another one.')
       :err.message);
   }}
-async function cloneWorkflow(id){const src=id?(state.data.workflows||[]).find(w=>w.id===id):state.workflow;if(!src?.id)return toast('先选择一条 SOP');const name=await afPrompt({title:'复制 SOP',message:'请输入复制后的 SOP 名称：',defaultValue:`${src.name} - 副本`});if(!name)return;const owner=await afPrompt({title:'SOP 负责人',message:'请输入负责人（可留空）：',defaultValue:src.owner||''})??'';try{const copied=await api(`/api/workflows/${encodeURIComponent(src.id)}/clone`,{method:'POST',body:JSON.stringify({id:uid('sop'),name,owner,projectId:state.projectFilter||''})});state.data.workflows.unshift(copied);state.workflow=clone(copied);state.selectedNode=null;state.sopScope='project';markWorkflowClean();renderAll();toast('已复制到本项目')}catch(e){toast(e.message)}}
+async function cloneWorkflow(id){const src=id?(state.data.workflows||[]).find(w=>w.id===id):state.workflow;if(!src?.id)return toast('先选择一条 SOP');const name=await afPrompt({title:'复制 SOP',message:'请输入复制后的 SOP 名称：',defaultValue:window.lfT(`${src.name} - 副本`,`${src.name} - copy`)});if(!name)return;const owner=await afPrompt({title:'SOP 负责人',message:'请输入负责人（可留空）：',defaultValue:src.owner||''})??'';try{const copied=await api(`/api/workflows/${encodeURIComponent(src.id)}/clone`,{method:'POST',body:JSON.stringify({id:uid('sop'),name,owner,projectId:state.projectFilter||''})});state.data.workflows.unshift(copied);state.workflow=clone(copied);state.selectedNode=null;state.sopScope='project';markWorkflowClean();renderAll();toast('已复制到本项目')}catch(e){toast(e.message)}}
 
 async function deleteWorkflow(id){
   const w=(state.data.workflows||[]).find(x=>x.id===id);
   if(!w)return toast('SOP 不存在或已删除');
-  if(!await afConfirm({title:'删除 SOP 确认',message:`确认删除 SOP「${w.name}」？此操作不可恢复，关联的运行记录会保留但流程定义将移除。`,confirmText:'确认删除',isDanger:true}))return;
+  if(!await afConfirm({title:'删除 SOP 确认',message:window.lfT(`确认删除 SOP「${w.name}」？此操作不可恢复，关联的运行记录会保留但流程定义将移除。`,`Delete SOP "${w.name}"? This cannot be undone. Run history is kept, but the SOP definition is removed.`),confirmText:'确认删除',isDanger:true}))return;
   try{
     await api(`/api/workflows/${encodeURIComponent(id)}`,{method:'DELETE'});
     state.data.workflows=state.data.workflows.filter(x=>x.id!==id);
@@ -1211,7 +1211,7 @@ async function publishWorkflow(){
     const published=await api(`/api/workflows/${encodeURIComponent(id)}/publish`,{method:'POST',body:'{}'});
     const i=state.data.workflows.findIndex(w=>w.id===published.id);if(i>=0)state.data.workflows[i]=clone(published);
     if(state.workflow?.id===id){state.workflow=clone(published);markWorkflowClean();renderWorkflowMeta()}
-    renderSOPCatalog();toast(`已发布 v${published.version}`);
+    renderSOPCatalog();toast(window.lfT(`已发布 v${published.version}`,`Published v${published.version}`));
   }catch(e){if(!e.message.includes('revision conflict'))toast(e.message)}
   finally{workflowPublishing=false;renderFlowHeader()}
 }

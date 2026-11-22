@@ -72,10 +72,10 @@ function scheduleRunningCount(jobs, projectId){
 }
 function scheduleIntervalLabel(sec){
   const n=Number(sec)||0;
-  if(n>=86400&&n%86400===0)return n===86400?'每天':`每 ${n/86400} 天`;
-  if(n>=3600&&n%3600===0)return n===3600?'每小时':`每 ${n/3600} 小时`;
-  if(n>=60&&n%60===0)return `每 ${n/60} 分钟`;
-  return n?`每 ${n} 秒`:'';
+  if(n>=86400&&n%86400===0)return n===86400?'每天':`${window.lfT('每','Every')} ${n/86400} ${window.lfT('天','days')}`;
+  if(n>=3600&&n%3600===0)return n===3600?'每小时':`${window.lfT('每','Every')} ${n/3600} ${window.lfT('小时','hours')}`;
+  if(n>=60&&n%60===0)return `${window.lfT('每','Every')} ${n/60} ${window.lfT('分钟','min')}`;
+  return n?`${window.lfT('每','Every')} ${n} ${window.lfT('秒','s')}`:'';
 }
 function scheduleJobKind(job){
   return job?.skipDispatch?'assistant':'dispatch';
@@ -416,7 +416,7 @@ function findAlignRun(runId){return (state.data.runs||[]).find(r=>r.id===runId)}
 function findAlignBlocks(runId){for(const j of state.data.scheduleJobs||[]){for(const b of j.blockers||[]){if(b.alignRunId===runId&&(b.conflictBlocks||[]).length)return b.conflictBlocks}}return []}
 function conflictBlockHTML(b,idx){
   const ours=(b.ours||'').trim(),theirs=(b.theirs||'').trim();
-  return `<div class="align-conflict-block"><div class="align-conflict-file">冲突块 ${idx+1} · <code>${escapeHTML(b.file)}</code></div><div class="align-conflict-sides"><div class="align-conflict-side ours"><b>集成分支侧（ours）</b><pre>${escapeHTML(ours||'（空）')}</pre></div><div class="align-conflict-side theirs"><b>默认分支侧（theirs）</b><pre>${escapeHTML(theirs||'（空）')}</pre></div></div></div>`;
+  return `<div class="align-conflict-block"><div class="align-conflict-file">冲突块 ${idx+1} · <code>${escapeHTML(b.file)}</code></div><div class="align-conflict-sides"><div class="align-conflict-side ours"><b>集成分支侧（ours）</b><pre>${escapeHTML(ours||window.lfT('（空）','(empty)'))}</pre></div><div class="align-conflict-side theirs"><b>默认分支侧（theirs）</b><pre>${escapeHTML(theirs||window.lfT('（空）','(empty)'))}</pre></div></div></div>`;
 }
 function alignConflictPanelHTML(r){
   const blocks=findAlignBlocks(r.id);
@@ -449,7 +449,7 @@ function scheduleBlockerHTML(j){
     const branches=`${escapeHTML(b.defaultBranch||'默认分支')} → ${escapeHTML(b.integrateBranch||'集成分支')}`;
     const blocks=Array.isArray(b.conflictBlocks)?b.conflictBlocks:[];
     const run=blockers&&b.alignRunId?findAlignRun(b.alignRunId):null;
-    const detail=blocks.length?`<details class="schedule-blocker-detail"><summary>展开 ${blocks.length} 个冲突块</summary>${blocks.map(conflictBlockHTML).join('')}</details>`:(files.length?`<small>冲突文件：${escapeHTML(files.slice(0,5).join('、'))}${files.length>5?' 等':''}</small>`:'');
+    const detail=blocks.length?`<details class="schedule-blocker-detail"><summary>展开 ${blocks.length} 个冲突块</summary>${blocks.map(conflictBlockHTML).join('')}</details>`:(files.length?`<small>冲突文件：${escapeHTML(files.slice(0,5).join('、'))}${files.length>5?window.lfT(' 等',' and others'):''}</small>`:'');
     let action='';
     if(b.alignRunId){
       if(run&&run.status==='waiting')action=`<button type="button" class="button primary small" data-realign-run="${escapeHTML(b.alignRunId)}">一键重新对齐</button>`;
@@ -496,7 +496,7 @@ async function toggleScheduleJobEnabled(input){
     const saved=await api(`/api/schedule-jobs/${encodeURIComponent(id)}/enabled`,{method:'POST',body:JSON.stringify({enabled})});
     const at=(state.data.scheduleJobs||[]).findIndex(j=>j.id===id);
     if(at>=0)state.data.scheduleJobs[at]=saved;
-    toast(enabled?`已启用「${saved.name||jobs[idx].name}」`:`已停用「${saved.name||jobs[idx].name}」，正在运行的这次不受影响`);
+    toast(enabled?window.lfT('已启用「','Enabled "')+(saved.name||jobs[idx].name)+window.lfT('」','"'):window.lfT('已停用「','Disabled "')+(saved.name||jobs[idx].name)+window.lfT('」，正在运行的这次不受影响','". The current run is unaffected'));
   }catch(err){
     const at=(state.data.scheduleJobs||[]).findIndex(j=>j.id===id);
     if(at>=0)state.data.scheduleJobs[at]={...state.data.scheduleJobs[at],enabled:before};
@@ -723,12 +723,12 @@ async function runScheduleJob(id){
 }
 async function deleteScheduleJob(id){
   const job=(state.data.scheduleJobs||[]).find(j=>j.id===id);
-  const label=job?.skipDispatch?'AI 定时任务':'触发配置';
-  if(!await afConfirm({title:`删除${label}`,message:`确定删除这个${label}吗？此操作不可恢复。`,confirmText:'确认删除',isDanger:true}))return;
+  const assistant=!!job?.skipDispatch;
+  if(!await afConfirm({title:window.lfT(assistant?'删除 AI 定时任务':'删除触发配置',assistant?'Delete AI scheduled task':'Delete trigger'),message:window.lfT(assistant?'确定删除这个 AI 定时任务吗？此操作不可恢复。':'确定删除这个触发配置吗？此操作不可恢复。',assistant?'Delete this AI scheduled task? This cannot be undone.':'Delete this trigger? This cannot be undone.'),confirmText:'确认删除',isDanger:true}))return;
   try{
     await api(`/api/schedule-jobs/${encodeURIComponent(id)}`,{method:'DELETE'});
     state.data.scheduleJobs=(state.data.scheduleJobs||[]).filter(j=>j.id!==id);
-    resetScheduleJobForm();renderScheduleJobs();toast(`${label}已删除`);
+    resetScheduleJobForm();renderScheduleJobs();toast(window.lfT(assistant?'AI 定时任务已删除':'触发配置已删除',assistant?'AI scheduled task deleted':'Trigger deleted'));
   }catch(err){toast(err.message)}
 }
 async function refreshSyncStatus(){try{const wasSyncing=!!state.data.syncing,[status,jobs]=await Promise.all([api('/api/sync/status',{silent:true}),api('/api/schedule-jobs',{silent:true})]);state.data.syncLogs=status.logs||[];state.data.syncing=status.syncing||false;state.data.syncConfig=status.config||state.data.syncConfig;state.data.scheduleJobs=jobs||[];renderSync();if(wasSyncing&&!state.data.syncing)await refreshIssues()}catch(e){if(!state.data.syncing)$('#syncBadge').textContent='连接异常'}}

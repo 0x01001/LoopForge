@@ -52,7 +52,7 @@ function renderSharedScheduleMarket(){
   const focusId=action?focused.dataset[action]:null;
   const items=sharedScheduleCatalog.filter(v=>[v.name,v.description,v.sourceProjectName,v.sourceProjectId,...(v.parameters||[]).map(p=>p.label)].join(' ').toLowerCase().includes(sharedScheduleQuery));
   const project=currentProject();
-  $('#sharedScheduleMarketHint').textContent=projectId?`订阅将添加到「${project?.name||projectId}」，参数、调度和通知由本项目独立配置。新版本发布后可手动升级。`:'共享任务可跨项目浏览；请先选择项目，再添加订阅。';
+  $('#sharedScheduleMarketHint').textContent=projectId?window.lfT('订阅将添加到「','Subscription will be added to "')+(project?.name||projectId)+window.lfT('」，参数、调度和通知由本项目独立配置。新版本发布后可手动升级。','". Parameters, schedule, and notifications are set in this project. Upgrade manually after a new release.'):'共享任务可跨项目浏览；请先选择项目，再添加订阅。';
   const status=$('#sharedScheduleMarketStatus');
   status.innerHTML=sharedScheduleCatalogError?`<div class="shared-schedule-market-error">读取共享任务失败：${escapeHTML(sharedScheduleCatalogError)} <button type="button" class="button ghost small" data-retry-shared>重试</button></div>`:'';
   status.querySelector('[data-retry-shared]')?.addEventListener('click',()=>refreshSharedScheduleCatalog().catch(()=>{}));
@@ -60,7 +60,7 @@ function renderSharedScheduleMarket(){
   if(!sharedScheduleCatalog.length){host.innerHTML=`<div class="shared-schedule-market-empty">${sharedScheduleCatalogLoading?'正在读取共享任务…':sharedScheduleCatalogError?'共享任务暂时无法加载，请重试。':'还没有共享任务。在本项目的独立 AI 定时任务旁点击「发布共享」，即可供其他项目订阅。'}</div>`;return}
   host.innerHTML=items.map(v=>{
     const count=(state.data.scheduleJobs||[]).filter(j=>projectId&&j.projectId===projectId&&j.sharedTaskId===v.id).length;
-    return `<article class="mcp-market-card"><div class="mcp-card-head"><span class="shared-schedule-market-icon"><svg class="agent-icon harness-icon" data-icon="clock" width="22" height="22" aria-hidden="true" focusable="false"></svg></span><div><h3>${escapeHTML(v.name)}</h3><span class="shared-schedule-market-source">${escapeHTML(v.sourceProjectName||v.sourceProjectId)}</span></div><span class="hui-badge" data-tone="neutral" data-size="sm">v${v.version}</span></div><p>${escapeHTML(v.description||'暂无用途说明，查看详情了解提示词与业务参数。')}</p><div class="shared-schedule-market-meta"><span>推荐 ${escapeHTML(scheduleJobTimingLabel(v))}</span><span>${(v.parameters||[]).length} 个参数</span>${count?`<span class="shared-schedule-subscribed">本项目已订阅 ${count} 个</span>`:''}</div><div class="shared-schedule-market-actions"><button type="button" class="button ghost small" data-read-shared="${escapeHTML(v.id)}">查看详情</button><button type="button" class="button primary small" data-subscribe-shared="${escapeHTML(v.id)}" ${projectId?'':'disabled'}>${count?'继续添加':'添加订阅'}</button></div></article>`;
+    return `<article class="mcp-market-card"><div class="mcp-card-head"><span class="shared-schedule-market-icon"><svg class="agent-icon harness-icon" data-icon="clock" width="22" height="22" aria-hidden="true" focusable="false"></svg></span><div><h3>${escapeHTML(v.name)}</h3><span class="shared-schedule-market-source">${escapeHTML(v.sourceProjectName||v.sourceProjectId)}</span></div><span class="hui-badge" data-tone="neutral" data-size="sm">v${v.version}</span></div><p>${escapeHTML(v.description||'暂无用途说明，查看详情了解提示词与业务参数。')}</p><div class="shared-schedule-market-meta"><span>推荐 ${escapeHTML(scheduleJobTimingLabel(v))}</span><span>${(v.parameters||[]).length} 个参数</span>${count?`<span class="shared-schedule-subscribed">${window.lfT('本项目已订阅','Subscribed in this project')} ${count}${window.lfT(' 个','')}</span>`:''}</div><div class="shared-schedule-market-actions"><button type="button" class="button ghost small" data-read-shared="${escapeHTML(v.id)}">查看详情</button><button type="button" class="button primary small" data-subscribe-shared="${escapeHTML(v.id)}" ${projectId?'':'disabled'}>${count?'继续添加':'添加订阅'}</button></div></article>`;
   }).join('')||'<div class="shared-schedule-market-empty">没有匹配的共享任务，试试其他关键词。</div>';
   host.querySelectorAll('[data-read-shared]').forEach(b=>b.onclick=()=>openSharedScheduleVersions(b.dataset.readShared,false));
   host.querySelectorAll('[data-subscribe-shared]').forEach(b=>b.onclick=()=>{
@@ -185,7 +185,7 @@ async function publishSharedSchedule(e){
     sharedScheduleCatalog=sharedScheduleCatalog.filter(item=>item.id!==v.id).concat(v);
     renderScheduleJobs();
     if(request===sharedSchedulePublishRequest){$('#sharedSchedulePublishModal').classList.remove('open');$('#newAISchedule').focus()}
-    toast(`已发布 ${v.name} v${v.version}，其他项目可从「共享任务市场」订阅`);
+    toast(window.lfT('已发布 ','Published ')+v.name+` v${v.version}`+window.lfT('，其他项目可从「共享任务市场」订阅','. Other projects can subscribe from Shared tasks'));
   }catch(err){if(request===sharedSchedulePublishRequest)$('#sharedSchedulePublishError').textContent=err.message}
   finally{if(request===sharedSchedulePublishRequest)button.disabled=false}
 }
@@ -200,7 +200,7 @@ function paintSharedScheduleSaveLabel(){
   const expanded=!$('#sharedScheduleVersionEditor').hidden,choose=f.querySelector('[data-choose-shared-version]');
   if(choose){choose.textContent=expanded?'收起版本对比':'查看 / 切换版本';choose.setAttribute('aria-expanded',String(expanded))}
   const changed=selected!==sharedScheduleEditorBaseVersion;
-  f.querySelector('[type="submit"]').textContent=changed?`保存并${selected>sharedScheduleEditorBaseVersion?'升级':'切换'}到 v${selected}`:'保存 AI 定时任务';
+  f.querySelector('[type="submit"]').textContent=changed?`${window.lfT(selected>sharedScheduleEditorBaseVersion?'保存并升级到':'保存并切换到',selected>sharedScheduleEditorBaseVersion?'Save and upgrade to':'Save and switch to')} v${selected}`:'保存 AI 定时任务';
   $('#scheduleModalTitle').textContent=changed?'更新共享任务订阅':'共享任务版本';
   $('#scheduleModalHint').textContent='在这里对比版本、调整参数并保存。保存后，后续执行使用所选版本。';
 }

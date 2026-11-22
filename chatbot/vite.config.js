@@ -16,6 +16,10 @@ export default defineConfig({
       "/vscode.css": api,
       "/vscode-web": api,
       "/extensions": api,
+      "/boot.js": api,
+      "/i18n.js": api,
+      "/i18n-en.js": api,
+      "/i18n-vi.js": api,
     },
   },
 });
